@@ -1,6 +1,6 @@
-import { EducationalStage } from './educational-stage.model';
+import { EducationalStage, Gender } from './api.model';
 
-export type UserRole = 'admin' | 'student';
+export type UserRole = 'Admin' | 'Student';
 
 export interface AuthUser {
   id: string;
@@ -8,23 +8,44 @@ export interface AuthUser {
   role: UserRole;
   name: string;
   stage?: EducationalStage;
-  avatarUrl?: string;
 }
 
 export interface AuthSession {
   user: AuthUser;
-  token: string;
+  accessToken: string;
+  refreshToken: string;
   expiresAt: number;
   rememberMe: boolean;
 }
 
-/**
- * Mock-only credential record. Plaintext passwords are acceptable here ONLY because
- * this is a frontend-only demo with no real backend/user data — never do this in production.
- */
-export interface MockCredential {
+export interface LoginRequest {
   email: string;
   password: string;
-  userId: string;
-  role: UserRole;
+}
+
+export interface RegisterRequest {
+  fullName: string;
+  parentName: string;
+  studentPhone: string;
+  parentPhone: string;
+  email: string;
+  password: string;
+  gender: Gender;
+  governorate: string;
+  city: string;
+  educationalStage: EducationalStage;
+}
+
+export interface TokenResponse {
+  accessToken: string;
+  refreshToken: string;
+  expiration: string;
+  role: string;
+  fullName: string;
+  email: string;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
 }

@@ -22,29 +22,27 @@
 </section>
 
 <!-- About summary -->
-<section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-  <div class="grid items-center gap-10 lg:grid-cols-2">
-    <div class="order-2 overflow-hidden rounded-3xl border border-line shadow-[var(--shadow-card)] lg:order-1">
-      <img [src]="teacher.profileImageUrl" [alt]="teacher.name" class="h-full w-full object-cover" />
-    </div>
-    <div class="order-1 lg:order-2">
-      <span class="text-xs font-semibold text-primary">عن المعلم</span>
-      <h2 class="mt-2 text-2xl font-extrabold text-ink sm:text-3xl">{{ teacher.name }} - {{ teacher.subject }}</h2>
-      <p class="mt-4 whitespace-pre-line text-sm leading-8 text-ink-muted">{{ teacher.bio }}</p>
-      <div class="mt-5 flex flex-wrap gap-4 text-sm text-ink-muted">
-        <span class="flex items-center gap-1.5">
-          <svg lucideGraduationCap [size]="16" class="text-primary"></svg>
-          {{ teacher.experienceYears }} سنوات خبرة
-        </span>
-        <span class="flex items-center gap-1.5">
-          <svg lucideCircleCheckBig [size]="16" class="text-primary"></svg>
-          {{ teacher.achievements.length }} إنجازات موثقة
-        </span>
+@if (teacher(); as t) {
+  <section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+    <div class="grid items-center gap-10 lg:grid-cols-2">
+      <div class="order-2 overflow-hidden rounded-3xl border border-line shadow-[var(--shadow-card)] lg:order-1">
+        <img [src]="t.profileImageUrl | mediaUrl" [alt]="t.teacherName" class="h-full w-full object-cover" />
       </div>
-      <a routerLink="/about" class="btn-outline mt-6 inline-flex">اقرأ المزيد عن المعلم</a>
+      <div class="order-1 lg:order-2">
+        <span class="text-xs font-semibold text-primary">عن المعلم</span>
+        <h2 class="mt-2 text-2xl font-extrabold text-ink sm:text-3xl">{{ t.teacherName }}</h2>
+        <p class="mt-4 whitespace-pre-line text-sm leading-8 text-ink-muted">{{ t.biography }}</p>
+        <div class="mt-5 flex flex-wrap gap-4 text-sm text-ink-muted">
+          <span class="flex items-center gap-1.5">
+            <svg lucideGraduationCap [size]="16" class="text-primary"></svg>
+            {{ t.experience }}
+          </span>
+        </div>
+        <a routerLink="/about" class="btn-outline mt-6 inline-flex">اقرأ المزيد عن المعلم</a>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
+}
 
 <!-- Gallery -->
 <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -53,8 +51,13 @@
     <p class="mt-2 text-sm text-ink-muted">لقطات من حصص المعلم والفصول الدراسية</p>
   </div>
   <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-    @for (i of [1, 2, 3, 4, 5, 6]; track i) {
-      <app-gallery-placeholder class="animate-fade-up" [style.animation-delay.ms]="i * 60"></app-gallery-placeholder>
+    @for (src of galleryImages; track src; let i = $index) {
+      <div
+        class="animate-fade-up aspect-square overflow-hidden rounded-2xl border border-line"
+        [style.animation-delay.ms]="i * 60"
+      >
+        <img [src]="src" alt="" class="h-full w-full object-cover" />
+      </div>
     }
   </div>
 </section>
@@ -183,15 +186,15 @@
       <div class="mt-6 space-y-3 text-sm text-ink-muted">
         <p class="flex items-center gap-2">
           <svg lucidePhone [size]="16" class="text-primary"></svg>
-          <span dir="ltr">{{ teacher.contactPhone }}</span>
+          <span dir="ltr">{{ contact.contactPhone }}</span>
         </p>
         <p class="flex items-center gap-2">
           <svg lucidePhone [size]="16" class="text-primary"></svg>
-          <span dir="ltr">{{ teacher.supportPhone }}</span>
+          <span dir="ltr">{{ contact.supportPhone }}</span>
           <span class="text-xs">(الدعم الفني)</span>
         </p>
         <a
-          [href]="teacher.socialLinks.whatsapp"
+          [href]="contact.socialLinks.whatsapp"
           target="_blank"
           rel="noopener"
           class="flex items-center gap-2 font-medium text-primary hover:underline"

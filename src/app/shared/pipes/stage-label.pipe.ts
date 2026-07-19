@@ -1,12 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { StageTarget, stageLabel } from '../../models';
+import { EducationalStage, stageLabel } from '../../models';
 
 @Pipe({ name: 'stageLabel' })
 export class StageLabelPipe implements PipeTransform {
-  transform(value: StageTarget | null | undefined): string {
-    if (!value) {
-      return '-';
-    }
+  transform(value: EducationalStage | null | undefined): string {
     return stageLabel(value);
   }
 }

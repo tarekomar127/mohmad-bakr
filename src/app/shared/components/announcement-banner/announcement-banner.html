@@ -5,9 +5,9 @@
   <div class="min-w-0 flex-1">
     <div class="flex flex-wrap items-center justify-between gap-2">
       <h4 class="text-sm font-semibold text-ink">{{ announcement().title }}</h4>
-      <span class="whitespace-nowrap text-xs text-ink-muted">{{ announcement().publishDate }}</span>
+      <span class="whitespace-nowrap text-xs text-ink-muted">{{ announcement().createdAt | date: 'mediumDate' }}</span>
     </div>
-    <p class="mt-1 text-sm text-ink-muted">{{ announcement().content }}</p>
+    <p class="mt-1 text-sm text-ink-muted">{{ announcement().description }}</p>
     <span class="mt-2 inline-block rounded-full bg-accent px-2.5 py-0.5 text-xs font-medium text-primary">
       {{ announcement().targetStage | stageLabel }}
     </span>

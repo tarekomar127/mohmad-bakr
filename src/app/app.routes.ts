@@ -25,7 +25,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     canActivate: [authGuard, roleGuard],
-    data: { role: 'admin' },
+    data: { role: 'Admin' },
     loadComponent: () => import('./layouts/admin-layout/admin-layout').then((m) => m.AdminLayout),
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -49,7 +49,7 @@ export const routes: Routes = [
   {
     path: 'student',
     canActivate: [authGuard, roleGuard],
-    data: { role: 'student' },
+    data: { role: 'Student' },
     loadComponent: () => import('./layouts/student-layout/student-layout').then((m) => m.StudentLayout),
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -60,6 +60,10 @@ export const routes: Routes = [
       { path: 'videos', loadComponent: () => import('./features/student/videos/videos').then((m) => m.StudentVideos) },
       { path: 'pdfs', loadComponent: () => import('./features/student/pdfs/pdfs').then((m) => m.StudentPdfs) },
       { path: 'exams', loadComponent: () => import('./features/student/exams/exams').then((m) => m.StudentExams) },
+      {
+        path: 'exams/:id',
+        loadComponent: () => import('./features/student/exams/exam-take/exam-take').then((m) => m.ExamTake),
+      },
       { path: 'results', loadComponent: () => import('./features/student/results/results').then((m) => m.StudentResults) },
       {
         path: 'notifications',

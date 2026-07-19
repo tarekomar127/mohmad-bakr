@@ -1,35 +1,34 @@
-import { Injectable, inject, signal } from '@angular/core';
-import { Observable, delay, of } from 'rxjs';
-import { AppNotification } from '../models';
-import { MOCK_NOTIFICATIONS } from '../mock-data';
-import { readJson, writeJson } from '../shared/utils/local-store-sync';
-import { ContentScopeService } from '../core/services/content-scope.service';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { Observable, map } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { ApiResponse, AppNotification, EducationalStage, NotificationCreateDto, PagedResult } from '../models';
 
-const STORAGE_KEY = 'mock_notifications';
+export interface NotificationsQuery {
+  search?: string;
+  stage?: EducationalStage;
+  pageNumber?: number;
+  pageSize?: number;
+}
 
 @Injectable({ providedIn: 'root' })
 export class NotificationsService {
-  private readonly scope = inject(ContentScopeService);
-  private readonly _notifications = signal<AppNotification[]>(readJson(STORAGE_KEY, MOCK_NOTIFICATIONS));
-  readonly notifications = this._notifications.asReadonly();
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = `${environment.apiUrl}/Notifications`;
 
-  getAll(): Observable<AppNotification[]> {
-    return of(this._notifications()).pipe(delay(300));
+  getAll(query: NotificationsQuery = {}): Observable<PagedResult<AppNotification>> {
+    let params = new HttpParams()
+      .set('pageNumber', query.pageNumber ?? 1)
+      .set('pageSize', query.pageSize ?? 100);
+    if (query.search) params = params.set('search', query.search);
+    if (query.stage) params = params.set('stage', query.stage);
+
+    return this.http
+      .get<ApiResponse<PagedResult<AppNotification>>>(this.baseUrl, { params })
+      .pipe(map((res) => res.data));
   }
 
-  getForCurrentStudent(): Observable<AppNotification[]> {
-    const sorted = [...this._notifications()].sort(
-      (a, b) => new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime(),
-    );
-    return of(this.scope.scopeToCurrentStudent(sorted, (n) => n.targetStage)).pipe(delay(300));
-  }
-
-  send(notification: AppNotification): void {
-    this._notifications.update((list) => [notification, ...list]);
-    this.persist();
-  }
-
-  private persist(): void {
-    writeJson(STORAGE_KEY, this._notifications());
+  send(dto: NotificationCreateDto): Observable<AppNotification> {
+    return this.http.post<ApiResponse<AppNotification>>(this.baseUrl, dto).pipe(map((res) => res.data));
   }
 }

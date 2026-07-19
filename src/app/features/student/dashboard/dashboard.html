@@ -8,44 +8,19 @@
   <div class="grid gap-4 sm:grid-cols-3">
     <div class="rounded-2xl border border-line bg-surface p-5 text-center shadow-[var(--shadow-card)]">
       <svg lucideTrendingUp [size]="22" class="mx-auto text-primary"></svg>
-      <p class="mt-2 text-2xl font-bold text-ink">{{ student()?.progressPercent ?? 0 }}%</p>
-      <p class="mt-1 text-sm text-ink-muted">نسبة التقدم</p>
-      <app-progress-bar class="mt-3 block" [value]="student()?.progressPercent ?? 0" [showPercentLabel]="false"></app-progress-bar>
-    </div>
-    <div class="rounded-2xl border border-line bg-surface p-5 text-center shadow-[var(--shadow-card)]">
-      <svg lucideClipboardList [size]="22" class="mx-auto text-primary"></svg>
-      <p class="mt-2 text-2xl font-bold text-ink">{{ student()?.averageScore ?? 0 }}%</p>
+      <p class="mt-2 text-2xl font-bold text-ink">{{ averagePercentage() }}%</p>
       <p class="mt-1 text-sm text-ink-muted">متوسط الدرجات</p>
     </div>
     <div class="rounded-2xl border border-line bg-surface p-5 text-center shadow-[var(--shadow-card)]">
-      <svg lucideBookOpen [size]="22" class="mx-auto text-primary"></svg>
-      <p class="mt-2 text-2xl font-bold text-ink">{{ student()?.completedLessons ?? 0 }}</p>
-      <p class="mt-1 text-sm text-ink-muted">عدد الدروس المكتملة</p>
+      <svg lucideClipboardList [size]="22" class="mx-auto text-primary"></svg>
+      <p class="mt-2 text-2xl font-bold text-ink">{{ examsTaken() }}</p>
+      <p class="mt-1 text-sm text-ink-muted">امتحانات تم أداؤها</p>
     </div>
-  </div>
-
-  <div id="lessons" class="scroll-mt-24 rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
-    <h2 class="mb-4 text-sm font-bold text-ink">آخر الدروس المضافة</h2>
-    @if (recentVideos().length === 0) {
-      <app-empty-state title="لا توجد دروس جديدة بعد"></app-empty-state>
-    } @else {
-      <ul class="divide-y divide-line">
-        @for (v of recentVideos(); track v.id) {
-          <li class="flex items-center justify-between gap-3 py-3">
-            <div class="flex items-center gap-3">
-              <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-primary">
-                <svg lucideBookOpen [size]="14"></svg>
-              </span>
-              <div>
-                <p class="text-sm font-medium text-ink">{{ v.lessonName }}</p>
-                <p class="text-xs text-ink-muted">{{ v.title }}</p>
-              </div>
-            </div>
-            <span class="shrink-0 text-xs text-ink-muted">{{ v.createdAt }}</span>
-          </li>
-        }
-      </ul>
-    }
+    <div class="rounded-2xl border border-line bg-surface p-5 text-center shadow-[var(--shadow-card)]">
+      <svg lucideBookOpen [size]="22" class="mx-auto text-primary"></svg>
+      <p class="mt-2 text-2xl font-bold text-ink">{{ videosCount() }}</p>
+      <p class="mt-1 text-sm text-ink-muted">فيديو متاح</p>
+    </div>
   </div>
 
   <div>
@@ -55,7 +30,7 @@
     } @else {
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         @for (v of recentVideos(); track v.id) {
-          <app-video-card [video]="v" (watch)="watchVideo(v.id)"></app-video-card>
+          <app-video-card [video]="v" (watch)="watchVideo()"></app-video-card>
         }
       </div>
     }
@@ -68,7 +43,7 @@
     } @else {
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         @for (p of recentPdfs(); track p.id) {
-          <app-pdf-card [pdf]="p" (view)="viewPdf(p.id)" (download)="viewPdf(p.id)"></app-pdf-card>
+          <app-pdf-card [pdf]="p" (view)="viewPdf()" (download)="viewPdf()"></app-pdf-card>
         }
       </div>
     }

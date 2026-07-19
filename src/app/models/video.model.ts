@@ -1,24 +1,30 @@
-import { EducationalStage } from './educational-stage.model';
-
-export type ContentStatus = 'published' | 'draft';
-
 export interface Video {
   id: string;
   title: string;
   description: string;
   thumbnailUrl: string;
-  stage: EducationalStage;
+  videoUrl: string;
+  lessonId: string;
   lessonName: string;
-  durationMinutes: number;
-  status: ContentStatus;
-  teacherName: string;
+  unitId: string;
+  unitName: string;
+  termId: string;
+  termName: string;
+  educationalStageId: string;
+  stageName: string;
+  duration: number;
+  isPublished: boolean;
   createdAt: string;
-  watchCount: number;
 }
 
-export interface VideoProgress {
-  studentId: string;
-  videoId: string;
-  progressPercent: number;
-  completed: boolean;
+export interface VideoCreateDto {
+  title: string;
+  description: string;
+  thumbnailUrl: string;
+  videoUrl: string;
+  lessonId: string;
+  duration: number;
+  isPublished: boolean;
 }
+
+export type VideoUpdateDto = VideoCreateDto;

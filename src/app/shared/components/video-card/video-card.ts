@@ -1,11 +1,12 @@
 import { Component, input, output } from '@angular/core';
-import { LucideClock, LucideCirclePlay, LucideUser } from '@lucide/angular';
+import { LucideClock, LucideCirclePlay, LucideLayers } from '@lucide/angular';
 import { Video } from '../../../models';
 import { ProgressBar } from '../progress-bar/progress-bar';
+import { MediaUrlPipe } from '../../pipes/media-url.pipe';
 
 @Component({
   selector: 'app-video-card',
-  imports: [LucideClock, LucideCirclePlay, LucideUser, ProgressBar],
+  imports: [LucideClock, LucideCirclePlay, LucideLayers, ProgressBar, MediaUrlPipe],
   templateUrl: './video-card.html',
   styleUrl: './video-card.scss',
 })

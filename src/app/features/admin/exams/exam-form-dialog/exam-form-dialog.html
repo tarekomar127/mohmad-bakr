@@ -5,24 +5,48 @@
       <input formControlName="title" type="text" class="field-control" placeholder="عنوان الامتحان" />
     </div>
 
-    <div>
-      <label class="mb-1.5 block text-sm font-medium text-ink">المرحلة التعليمية</label>
-      <select formControlName="stage" class="field-control">
-        <option value="" disabled>اختر المرحلة</option>
-        @for (stage of stages; track stage) {
-          <option [value]="stage">{{ stageLabels[stage] }}</option>
-        }
-      </select>
-    </div>
-
     <div class="grid gap-4 sm:grid-cols-3">
       <div>
-        <label class="mb-1.5 block text-sm font-medium text-ink">عدد الأسئلة</label>
-        <input formControlName="questionCount" type="number" min="1" class="field-control" />
+        <label class="mb-1.5 block text-sm font-medium text-ink">المرحلة</label>
+        <select class="field-control" [ngModel]="selectedStageId()" [ngModelOptions]="{ standalone: true }" (ngModelChange)="onStageChange($event)">
+          <option value="" disabled>اختر المرحلة</option>
+          @for (stage of stages(); track stage.id) {
+            <option [value]="stage.id">{{ stage.name }}</option>
+          }
+        </select>
       </div>
       <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">الترم</label>
+        <select
+          class="field-control"
+          [ngModel]="selectedTermId()"
+          [ngModelOptions]="{ standalone: true }"
+          (ngModelChange)="onTermChange($event)"
+          [disabled]="!selectedStageId()"
+        >
+          <option value="" disabled>اختر الترم</option>
+          @for (term of terms(); track term.id) {
+            <option [value]="term.id">{{ term.name }}</option>
+          }
+        </select>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">الوحدة / الدرس</label>
+        <select formControlName="lessonId" class="field-control" [disabled]="!selectedTermId()">
+          <option value="" disabled>اختر الدرس</option>
+          @for (unit of units(); track unit.id) {
+            @for (lesson of unit.lessons; track lesson.id) {
+              <option [value]="lesson.id">{{ unit.name }} - {{ lesson.name }}</option>
+            }
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div>
         <label class="mb-1.5 block text-sm font-medium text-ink">مدة الامتحان (دقيقة)</label>
-        <input formControlName="durationMinutes" type="number" min="1" class="field-control" />
+        <input formControlName="duration" type="number" min="1" class="field-control" />
       </div>
       <div>
         <label class="mb-1.5 block text-sm font-medium text-ink">الدرجة النهائية</label>
@@ -30,12 +54,41 @@
       </div>
     </div>
 
-    <div>
-      <label class="mb-1.5 block text-sm font-medium text-ink">حالة النشر</label>
-      <select formControlName="status" class="field-control">
-        <option value="published">منشور</option>
-        <option value="draft">مسودة</option>
-      </select>
+    <div class="flex items-center justify-between border-t border-line pt-4">
+      <h3 class="text-sm font-bold text-ink">الأسئلة ({{ questions.length }})</h3>
+      <button type="button" (click)="addQuestion()" class="btn-outline text-xs">
+        <svg lucidePlus [size]="14"></svg>
+        إضافة سؤال
+      </button>
+    </div>
+
+    <div formArrayName="questions" class="space-y-4">
+      @for (q of questions.controls; track $index; let i = $index) {
+        <div [formGroupName]="i" class="space-y-3 rounded-2xl border border-line bg-page p-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-primary">السؤال {{ i + 1 }}</span>
+            <button type="button" (click)="removeQuestion(i)" class="text-red-600 hover:underline">
+              <svg lucideTrash2 [size]="14"></svg>
+            </button>
+          </div>
+          <input formControlName="text" type="text" class="field-control" placeholder="نص السؤال" />
+          <div class="grid gap-2 sm:grid-cols-2">
+            <input formControlName="optionA" type="text" class="field-control" placeholder="الاختيار أ" />
+            <input formControlName="optionB" type="text" class="field-control" placeholder="الاختيار ب" />
+            <input formControlName="optionC" type="text" class="field-control" placeholder="الاختيار ج" />
+            <input formControlName="optionD" type="text" class="field-control" placeholder="الاختيار د" />
+          </div>
+          <div>
+            <label class="mb-1.5 block text-xs font-medium text-ink-muted">الإجابة الصحيحة</label>
+            <select formControlName="correctAnswer" class="field-control">
+              <option [ngValue]="1">أ</option>
+              <option [ngValue]="2">ب</option>
+              <option [ngValue]="3">ج</option>
+              <option [ngValue]="4">د</option>
+            </select>
+          </div>
+        </div>
+      }
     </div>
   </form>
 

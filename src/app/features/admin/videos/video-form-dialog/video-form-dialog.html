@@ -11,54 +11,85 @@
     </div>
 
     <div>
-      <label class="mb-1.5 block text-sm font-medium text-ink">الصورة المصغرة</label>
-      <div class="flex items-center gap-4">
-        <div class="flex h-16 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-line bg-page">
-          @if (thumbnailPreview()) {
-            <img [src]="thumbnailPreview()" alt="" class="h-full w-full object-cover" />
-          } @else {
-            <span class="text-xs text-ink-muted">لا توجد صورة</span>
-          }
-        </div>
-        <label class="btn-outline cursor-pointer text-xs">
-          <svg lucideUpload [size]="14"></svg>
-          رفع صورة
-          <input type="file" accept="image/*" class="hidden" (change)="onThumbnailSelected($event)" />
-        </label>
-      </div>
+      <label class="mb-1.5 block text-sm font-medium text-ink">رابط الصورة المصغرة (اختياري)</label>
+      <input formControlName="thumbnailUrl" type="text" class="field-control" placeholder="/uploads/thumb.jpg" dir="ltr" />
     </div>
 
-    <div class="grid gap-4 sm:grid-cols-2">
+    <div class="grid gap-4 sm:grid-cols-3">
       <div>
-        <label class="mb-1.5 block text-sm font-medium text-ink">المرحلة التعليمية</label>
-        <select formControlName="stage" class="field-control">
+        <label class="mb-1.5 block text-sm font-medium text-ink">المرحلة</label>
+        <select class="field-control" [ngModel]="selectedStageId()" [ngModelOptions]="{ standalone: true }" (ngModelChange)="onStageChange($event)">
           <option value="" disabled>اختر المرحلة</option>
-          @for (stage of stages; track stage) {
-            <option [value]="stage">{{ stageLabels[stage] }}</option>
+          @for (stage of stages(); track stage.id) {
+            <option [value]="stage.id">{{ stage.name }}</option>
           }
         </select>
       </div>
       <div>
-        <label class="mb-1.5 block text-sm font-medium text-ink">اسم الدرس</label>
-        <input formControlName="lessonName" type="text" class="field-control" placeholder="مثال: النحو - المبتدأ والخبر" />
+        <label class="mb-1.5 block text-sm font-medium text-ink">الترم</label>
+        <select
+          class="field-control"
+          [ngModel]="selectedTermId()"
+          [ngModelOptions]="{ standalone: true }"
+          (ngModelChange)="onTermChange($event)"
+          [disabled]="!selectedStageId()"
+        >
+          <option value="" disabled>اختر الترم</option>
+          @for (term of terms(); track term.id) {
+            <option [value]="term.id">{{ term.name }}</option>
+          }
+        </select>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">الوحدة / الدرس</label>
+        <select formControlName="lessonId" class="field-control" [disabled]="!selectedTermId()">
+          <option value="" disabled>اختر الدرس</option>
+          @for (unit of units(); track unit.id) {
+            @for (lesson of unit.lessons; track lesson.id) {
+              <option [value]="lesson.id">{{ unit.name }} - {{ lesson.name }}</option>
+            }
+          }
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <label class="mb-1.5 block text-sm font-medium text-ink">ملف الفيديو</label>
+      <div class="flex items-center gap-3">
+        <label class="btn-outline shrink-0 cursor-pointer text-xs">
+          <svg lucideUpload [size]="14"></svg>
+          اختيار ملف
+          <input type="file" accept="video/*" class="hidden" (change)="onFileSelected($event)" />
+        </label>
+        <p class="min-w-0 flex-1 truncate text-xs text-ink-muted">
+          @if (uploading()) {
+            جاري الرفع...
+          } @else if (fileName()) {
+            {{ fileName() }} — تم الرفع
+          } @else if (uploadedVideoUrl()) {
+            يوجد ملف مرفوع بالفعل
+          } @else {
+            لم يتم اختيار ملف بعد
+          }
+        </p>
       </div>
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2">
       <div>
         <label class="mb-1.5 block text-sm font-medium text-ink">مدة الفيديو (دقيقة)</label>
-        <input formControlName="durationMinutes" type="number" min="1" class="field-control" />
+        <input formControlName="duration" type="number" min="1" class="field-control" />
       </div>
       <div>
         <label class="mb-1.5 block text-sm font-medium text-ink">حالة النشر</label>
-        <select formControlName="status" class="field-control">
-          <option value="published">منشور</option>
-          <option value="draft">مسودة</option>
+        <select formControlName="isPublished" class="field-control">
+          <option [ngValue]="true">منشور</option>
+          <option [ngValue]="false">مسودة</option>
         </select>
       </div>
     </div>
   </form>
 
   <button footer type="button" (click)="close()" class="btn-outline">إلغاء</button>
-  <button footer type="button" (click)="save()" class="btn-primary">حفظ</button>
+  <button footer type="button" (click)="save()" [disabled]="uploading()" class="btn-primary">حفظ</button>
 </app-modal>

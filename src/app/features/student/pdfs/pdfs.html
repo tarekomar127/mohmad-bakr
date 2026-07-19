@@ -20,7 +20,7 @@
     <div class="w-full max-w-lg rounded-2xl bg-surface shadow-[var(--shadow-card-hover)]" (click)="$event.stopPropagation()">
       <app-modal [title]="pdf.title" (closed)="closeView()">
         <p class="text-sm leading-7 text-ink-muted">{{ pdf.description }}</p>
-        <p class="mt-3 text-xs text-ink-muted">تاريخ الرفع: {{ pdf.uploadDate }}</p>
+        <p class="mt-3 text-xs text-ink-muted">تاريخ الرفع: {{ pdf.createdAt }}</p>
         <button footer type="button" (click)="closeView()" class="btn-outline">إغلاق</button>
         <button footer type="button" (click)="download(pdf); closeView()" class="btn-primary">تحميل الملف</button>
       </app-modal>

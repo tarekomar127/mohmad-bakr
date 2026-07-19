@@ -1,44 +1,74 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideFileText, LucideUpload } from '@lucide/angular';
 import { Modal } from '../../../../shared/components/modal/modal';
-import { ALL_STAGES, PdfFile, STAGE_LABELS } from '../../../../models';
-
-export interface PdfFormResult {
-  title: string;
-  description: string;
-  stage: (typeof ALL_STAGES)[number];
-  fileUrl: string;
-}
+import { PdfCreateDto, PdfFile, StageNode, TermNode, UnitNode } from '../../../../models';
+import { StructureService } from '../../../../services/structure.service';
+import { PdfsService } from '../../../../services/pdfs.service';
 
 @Component({
   selector: 'app-pdf-form-dialog',
-  imports: [Modal, ReactiveFormsModule, LucideFileText, LucideUpload],
+  imports: [Modal, ReactiveFormsModule, FormsModule, LucideFileText, LucideUpload],
   templateUrl: './pdf-form-dialog.html',
   styleUrl: './pdf-form-dialog.scss',
 })
 export class PdfFormDialog {
-  private readonly dialogRef = inject(MatDialogRef<PdfFormDialog, PdfFormResult | undefined>);
+  private readonly dialogRef = inject(MatDialogRef<PdfFormDialog, PdfCreateDto | undefined>);
   readonly existing = inject<PdfFile | null>(MAT_DIALOG_DATA);
   private readonly fb = inject(FormBuilder);
+  private readonly structureService = inject(StructureService);
+  private readonly pdfsService = inject(PdfsService);
 
-  readonly stages = ALL_STAGES;
-  readonly stageLabels = STAGE_LABELS;
-  readonly fileName = signal<string>(this.existing ? 'ملف مرفوع مسبقًا.pdf' : '');
+  readonly stages = this.structureService.stages;
+  readonly uploading = signal(false);
+  readonly uploadedFileUrl = signal(this.existing?.fileUrl ?? '');
+  readonly fileName = signal('');
+
+  readonly selectedStageId = signal('');
+  readonly selectedTermId = signal('');
+
+  readonly terms = computed<TermNode[]>(
+    () => this.stages().find((s: StageNode) => s.id === this.selectedStageId())?.terms ?? [],
+  );
+  readonly units = computed<UnitNode[]>(
+    () => this.terms().find((t) => t.id === this.selectedTermId())?.units ?? [],
+  );
 
   readonly form = this.fb.group({
     title: [this.existing?.title ?? '', Validators.required],
     description: [this.existing?.description ?? '', Validators.required],
-    stage: [this.existing?.stage ?? ('' as (typeof ALL_STAGES)[number] | ''), Validators.required],
+    lessonId: [this.existing?.lessonId ?? '', Validators.required],
   });
+
+  constructor() {
+    this.structureService.load().subscribe();
+  }
+
+  onStageChange(id: string): void {
+    this.selectedStageId.set(id);
+    this.selectedTermId.set('');
+    this.form.patchValue({ lessonId: '' });
+  }
+
+  onTermChange(id: string): void {
+    this.selectedTermId.set(id);
+    this.form.patchValue({ lessonId: '' });
+  }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-    if (file) {
-      this.fileName.set(file.name);
-    }
+    if (!file) return;
+    this.fileName.set(file.name);
+    this.uploading.set(true);
+    this.pdfsService.uploadFile(file).subscribe({
+      next: (url) => {
+        this.uploadedFileUrl.set(url);
+        this.uploading.set(false);
+      },
+      error: () => this.uploading.set(false),
+    });
   }
 
   close(): void {
@@ -46,7 +76,7 @@ export class PdfFormDialog {
   }
 
   save(): void {
-    if (this.form.invalid) {
+    if (this.form.invalid || !this.uploadedFileUrl()) {
       this.form.markAllAsTouched();
       return;
     }
@@ -54,8 +84,8 @@ export class PdfFormDialog {
     this.dialogRef.close({
       title: value.title!,
       description: value.description!,
-      stage: value.stage as (typeof ALL_STAGES)[number],
-      fileUrl: this.fileName(),
+      fileUrl: this.uploadedFileUrl(),
+      lessonId: value.lessonId!,
     });
   }
 }

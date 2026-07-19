@@ -2,8 +2,8 @@ import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Modal } from '../../../../shared/components/modal/modal';
-import { ALL_STAGES, STAGE_LABELS, Student, StudentStatus } from '../../../../models';
-import { EGYPT_GOVERNORATES } from '../../../../mock-data';
+import { ALL_STAGES, STAGE_LABELS, Student, StudentUpdateDto } from '../../../../models';
+import { EGYPT_GOVERNORATES } from '../../../../core/constants/governorates';
 import { egyptianPhoneValidator } from '../../../../shared/utils/validators';
 
 @Component({
@@ -13,7 +13,7 @@ import { egyptianPhoneValidator } from '../../../../shared/utils/validators';
   styleUrl: './student-edit-dialog.scss',
 })
 export class StudentEditDialog {
-  private readonly dialogRef = inject(MatDialogRef<StudentEditDialog, Partial<Student> | undefined>);
+  private readonly dialogRef = inject(MatDialogRef<StudentEditDialog, StudentUpdateDto | undefined>);
   readonly student = inject<Student>(MAT_DIALOG_DATA);
   private readonly fb = inject(FormBuilder);
 
@@ -22,14 +22,15 @@ export class StudentEditDialog {
   readonly governorates = EGYPT_GOVERNORATES;
 
   readonly form = this.fb.group({
-    studentName: [this.student.studentName, Validators.required],
+    fullName: [this.student.fullName, Validators.required],
     parentName: [this.student.parentName, Validators.required],
     studentPhone: [this.student.studentPhone, [Validators.required, egyptianPhoneValidator()]],
     parentPhone: [this.student.parentPhone, [Validators.required, egyptianPhoneValidator()]],
-    stage: [this.student.stage, Validators.required],
+    email: [this.student.email, [Validators.required, Validators.email]],
+    gender: [this.student.gender, Validators.required],
+    educationalStage: [this.student.educationalStage, Validators.required],
     governorate: [this.student.governorate, Validators.required],
     city: [this.student.city, Validators.required],
-    status: [this.student.status as StudentStatus, Validators.required],
   });
 
   close(): void {
@@ -41,6 +42,6 @@ export class StudentEditDialog {
       this.form.markAllAsTouched();
       return;
     }
-    this.dialogRef.close(this.form.getRawValue());
+    this.dialogRef.close(this.form.getRawValue() as StudentUpdateDto);
   }
 }

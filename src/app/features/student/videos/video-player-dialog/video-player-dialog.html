@@ -1,10 +1,13 @@
 <app-modal [title]="video.title" (closed)="close()">
-  <div class="flex aspect-video flex-col items-center justify-center gap-3 rounded-2xl bg-gradient-to-br from-primary/90 to-primary/50 text-white">
-    <svg lucideCirclePlay [size]="56" [strokeWidth]="1.5"></svg>
-    <p class="text-sm font-medium">{{ video.lessonName }}</p>
-  </div>
+  <video
+    [src]="videoSrc"
+    controls
+    controlsList="nodownload noremoteplayback"
+    disablePictureInPicture
+    (contextmenu)="$event.preventDefault()"
+    class="aspect-video w-full rounded-2xl bg-black"
+  ></video>
   <p class="mt-4 text-sm leading-7 text-ink-muted">{{ video.description }}</p>
 
   <button footer type="button" (click)="close()" class="btn-outline">إغلاق</button>
-  <button footer type="button" (click)="markComplete()" class="btn-primary">تحديد كمكتمل</button>
 </app-modal>

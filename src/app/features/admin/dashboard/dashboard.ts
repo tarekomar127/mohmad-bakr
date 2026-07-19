@@ -1,4 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
   LucideActivity,
   LucideClipboardList,
@@ -10,8 +11,8 @@ import {
 } from '@lucide/angular';
 import { StatCard } from '../../../shared/components/stat-card/stat-card';
 import { ChartWrapper } from '../../../shared/components/chart-wrapper/chart-wrapper';
-import { AnalyticsService } from '../../../services/analytics.service';
-import { STAGE_LABELS } from '../../../models';
+import { DashboardService } from '../../../services/dashboard.service';
+import { DashboardStats, STAGE_LABELS, StageDistributionItem, StudentRankEntry } from '../../../models';
 
 @Component({
   selector: 'app-dashboard',
@@ -30,18 +31,35 @@ import { STAGE_LABELS } from '../../../models';
   styleUrl: './dashboard.scss',
 })
 export class Dashboard {
-  readonly analytics = inject(AnalyticsService);
+  private readonly dashboardService = inject(DashboardService);
   readonly stageLabels = STAGE_LABELS;
 
-  readonly studentActivitySeries = [{ label: 'الطلاب النشطون', data: this.analytics.studentActivity.values }];
-  readonly averageScoresSeries = [{ label: 'متوسط الدرجات', data: this.analytics.averageScoresTrend.values }];
-  readonly videoCompletionSeries = [{ label: 'نسبة الإكمال %', data: this.analytics.videoCompletion.values }];
+  readonly stats = toSignal(this.dashboardService.getStats(), {
+    initialValue: {
+      totalStudents: 0,
+      totalVideos: 0,
+      totalPdfs: 0,
+      totalExams: 0,
+      totalAnnouncements: 0,
+      totalNotifications: 0,
+    } as DashboardStats,
+  });
 
+  readonly stageDistribution = toSignal(this.dashboardService.getStageDistribution(), {
+    initialValue: [] as StageDistributionItem[],
+  });
+
+  readonly performance = toSignal(this.dashboardService.getStudentPerformance(), {
+    initialValue: { topStudents: [] as StudentRankEntry[], weakStudents: [] as StudentRankEntry[], scoreDistribution: [] },
+  });
+
+  readonly topStudentsLabels = computed(() => this.performance().topStudents.map((s) => s.studentName));
   readonly topStudentsSeries = computed(() => [
-    {
-      label: 'متوسط الدرجات',
-      data: this.analytics.topStudents().map((s) => s.averageScore),
-    },
+    { label: 'متوسط النتائج', data: this.performance().topStudents.map((s) => s.averagePercentage) },
   ]);
-  readonly topStudentsLabels = computed(() => this.analytics.topStudents().map((s) => s.studentName));
+
+  readonly scoreDistributionLabels = computed(() => this.performance().scoreDistribution.map((b) => b.label));
+  readonly scoreDistributionSeries = computed(() => [
+    { label: 'عدد الطلاب', data: this.performance().scoreDistribution.map((b) => b.count) },
+  ]);
 }

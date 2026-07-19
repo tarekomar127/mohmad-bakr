@@ -2,32 +2,36 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideMoon, LucideSun, LucideUpload } from '@lucide/angular';
 import { TeacherService } from '../../../services/teacher.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { passwordsMatchValidator } from '../../../shared/utils/validators';
+import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
 
 @Component({
   selector: 'app-settings',
-  imports: [ReactiveFormsModule, LucideMoon, LucideSun, LucideUpload],
+  imports: [ReactiveFormsModule, LucideMoon, LucideSun, LucideUpload, MediaUrlPipe],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
 export class Settings {
   private readonly teacherService = inject(TeacherService);
+  private readonly authService = inject(AuthService);
   readonly theme = inject(ThemeService);
   private readonly fb = inject(FormBuilder);
 
   readonly profile = this.teacherService.profile;
-  readonly avatarPreview = signal(this.profile().profileImageUrl);
+  readonly avatarPreview = signal<string | null>(null);
+  private selectedAvatarFile: File | null = null;
   readonly profileSaved = signal(false);
   readonly passwordSaved = signal(false);
+  readonly passwordError = signal('');
+  readonly saving = signal(false);
 
   readonly profileForm = this.fb.group({
-    name: [this.profile().name, Validators.required],
-    bio: [this.profile().bio, Validators.required],
-    youtube: [this.profile().socialLinks.youtube ?? ''],
-    facebook: [this.profile().socialLinks.facebook ?? ''],
-    instagram: [this.profile().socialLinks.instagram ?? ''],
-    tiktok: [this.profile().socialLinks.tiktok ?? ''],
+    teacherName: ['', Validators.required],
+    biography: ['', Validators.required],
+    qualifications: ['', Validators.required],
+    experience: ['', Validators.required],
   });
 
   readonly passwordForm = this.fb.group(
@@ -39,10 +43,23 @@ export class Settings {
     { validators: passwordsMatchValidator('newPassword', 'confirmPassword') },
   );
 
+  constructor() {
+    this.teacherService.load().subscribe((profile) => {
+      this.profileForm.patchValue({
+        teacherName: profile.teacherName,
+        biography: profile.biography,
+        qualifications: profile.qualifications,
+        experience: profile.experience,
+      });
+      this.avatarPreview.set(profile.profileImageUrl);
+    });
+  }
+
   onAvatarSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (file) {
+      this.selectedAvatarFile = file;
       this.avatarPreview.set(URL.createObjectURL(file));
     }
   }
@@ -53,19 +70,39 @@ export class Settings {
       return;
     }
     const value = this.profileForm.getRawValue();
-    this.teacherService.update({
-      name: value.name!,
-      bio: value.bio!,
-      profileImageUrl: this.avatarPreview(),
-      socialLinks: {
-        youtube: value.youtube ?? '',
-        facebook: value.facebook ?? '',
-        instagram: value.instagram ?? '',
-        tiktok: value.tiktok ?? '',
-      },
-    });
-    this.profileSaved.set(true);
-    setTimeout(() => this.profileSaved.set(false), 3000);
+    this.saving.set(true);
+
+    const submit = (profileImageUrl: string) => {
+      this.teacherService
+        .update({
+          teacherName: value.teacherName!,
+          biography: value.biography!,
+          qualifications: value.qualifications!,
+          experience: value.experience!,
+          profileImageUrl,
+          galleryImages: this.profile()?.galleryImages ?? [],
+        })
+        .subscribe({
+          next: () => {
+            this.saving.set(false);
+            this.profileSaved.set(true);
+            setTimeout(() => this.profileSaved.set(false), 3000);
+          },
+          error: () => this.saving.set(false),
+        });
+    };
+
+    if (this.selectedAvatarFile) {
+      this.teacherService.uploadProfileImage(this.selectedAvatarFile).subscribe({
+        next: (url) => {
+          this.selectedAvatarFile = null;
+          submit(url);
+        },
+        error: () => this.saving.set(false),
+      });
+    } else {
+      submit(this.profile()?.profileImageUrl ?? '');
+    }
   }
 
   savePassword(): void {
@@ -73,8 +110,19 @@ export class Settings {
       this.passwordForm.markAllAsTouched();
       return;
     }
-    this.passwordForm.reset();
-    this.passwordSaved.set(true);
-    setTimeout(() => this.passwordSaved.set(false), 3000);
+    const value = this.passwordForm.getRawValue();
+    this.passwordError.set('');
+    this.authService
+      .changePassword({ currentPassword: value.currentPassword!, newPassword: value.newPassword! })
+      .subscribe({
+        next: () => {
+          this.passwordForm.reset();
+          this.passwordSaved.set(true);
+          setTimeout(() => this.passwordSaved.set(false), 3000);
+        },
+        error: (err) => {
+          this.passwordError.set(err?.error?.message || 'تعذر تغيير كلمة المرور، تحقق من كلمة المرور الحالية.');
+        },
+      });
   }
 }

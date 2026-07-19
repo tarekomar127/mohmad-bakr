@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { LucidePlus, LucideTrash2 } from '@lucide/angular';
 import { AnnouncementBanner } from '../../../shared/components/announcement-banner/announcement-banner';
@@ -19,7 +19,23 @@ export class Announcements {
   private readonly dialog = inject(MatDialog);
   private readonly confirmDialog = inject(ConfirmDialogService);
 
-  readonly announcements = this.announcementsService.announcements;
+  readonly announcements = signal<Announcement[]>([]);
+  readonly loading = signal(false);
+
+  constructor() {
+    this.reload();
+  }
+
+  reload(): void {
+    this.loading.set(true);
+    this.announcementsService.getAll().subscribe({
+      next: (res) => {
+        this.announcements.set(res.items);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
+    });
+  }
 
   openAddDialog(): void {
     this.dialog
@@ -27,12 +43,7 @@ export class Announcements {
       .afterClosed()
       .subscribe((result) => {
         if (result) {
-          const announcement: Announcement = {
-            id: `ann-${Date.now()}`,
-            createdAt: new Date().toISOString().slice(0, 10),
-            ...result,
-          };
-          this.announcementsService.add(announcement);
+          this.announcementsService.create(result).subscribe(() => this.reload());
         }
       });
   }
@@ -47,7 +58,7 @@ export class Announcements {
       })
       .subscribe((confirmed) => {
         if (confirmed) {
-          this.announcementsService.remove(announcement.id);
+          this.announcementsService.remove(announcement.id).subscribe(() => this.reload());
         }
       });
   }

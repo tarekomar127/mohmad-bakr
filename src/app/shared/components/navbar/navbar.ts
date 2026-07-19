@@ -25,7 +25,7 @@ export class Navbar {
   ];
 
   get dashboardPath(): string {
-    return this.auth.currentUser()?.role === 'admin' ? '/admin/dashboard' : '/student/dashboard';
+    return this.auth.currentUser()?.role === 'Admin' ? '/admin/dashboard' : '/student/dashboard';
   }
 
   closeMobile(): void {

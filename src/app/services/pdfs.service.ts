@@ -1,46 +1,50 @@
-import { Injectable, inject, signal } from '@angular/core';
-import { Observable, delay, of } from 'rxjs';
-import { PdfFile } from '../models';
-import { MOCK_PDFS } from '../mock-data';
-import { readJson, writeJson } from '../shared/utils/local-store-sync';
-import { ContentScopeService } from '../core/services/content-scope.service';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { Observable, map } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { ApiResponse, EducationalStage, PagedResult, PdfCreateDto, PdfFile, PdfUpdateDto } from '../models';
 
-const STORAGE_KEY = 'mock_pdfs';
+export interface PdfsQuery {
+  search?: string;
+  stage?: EducationalStage;
+  pageNumber?: number;
+  pageSize?: number;
+}
 
 @Injectable({ providedIn: 'root' })
 export class PdfsService {
-  private readonly scope = inject(ContentScopeService);
-  private readonly _pdfs = signal<PdfFile[]>(readJson(STORAGE_KEY, MOCK_PDFS));
-  readonly pdfs = this._pdfs.asReadonly();
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = `${environment.apiUrl}/Pdfs`;
 
-  getAll(): Observable<PdfFile[]> {
-    return of(this._pdfs()).pipe(delay(300));
+  getAll(query: PdfsQuery = {}): Observable<PagedResult<PdfFile>> {
+    let params = new HttpParams()
+      .set('pageNumber', query.pageNumber ?? 1)
+      .set('pageSize', query.pageSize ?? 100);
+    if (query.search) params = params.set('search', query.search);
+    if (query.stage) params = params.set('stage', query.stage);
+
+    return this.http.get<ApiResponse<PagedResult<PdfFile>>>(this.baseUrl, { params }).pipe(map((res) => res.data));
   }
 
-  getForCurrentStudent(): Observable<PdfFile[]> {
-    return of(this.scope.scopeToCurrentStudent(this._pdfs(), (p) => p.stage)).pipe(delay(300));
+  getById(id: string): Observable<PdfFile> {
+    return this.http.get<ApiResponse<PdfFile>>(`${this.baseUrl}/${id}`).pipe(map((res) => res.data));
   }
 
-  getById(id: string): PdfFile | undefined {
-    return this._pdfs().find((p) => p.id === id);
+  create(dto: PdfCreateDto): Observable<PdfFile> {
+    return this.http.post<ApiResponse<PdfFile>>(this.baseUrl, dto).pipe(map((res) => res.data));
   }
 
-  add(pdf: PdfFile): void {
-    this._pdfs.update((list) => [pdf, ...list]);
-    this.persist();
+  update(id: string, dto: PdfUpdateDto): Observable<PdfFile> {
+    return this.http.put<ApiResponse<PdfFile>>(`${this.baseUrl}/${id}`, dto).pipe(map((res) => res.data));
   }
 
-  update(id: string, patch: Partial<PdfFile>): void {
-    this._pdfs.update((list) => list.map((p) => (p.id === id ? { ...p, ...patch } : p)));
-    this.persist();
+  remove(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 
-  remove(id: string): void {
-    this._pdfs.update((list) => list.filter((p) => p.id !== id));
-    this.persist();
-  }
-
-  private persist(): void {
-    writeJson(STORAGE_KEY, this._pdfs());
+  uploadFile(file: File): Observable<string> {
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<ApiResponse<string>>(`${this.baseUrl}/upload`, form).pipe(map((res) => res.data));
   }
 }

@@ -32,7 +32,7 @@
               <td>
                 <div class="flex h-12 w-20 items-center justify-center overflow-hidden rounded-lg bg-accent text-primary">
                   @if (video.thumbnailUrl) {
-                    <img [src]="video.thumbnailUrl" alt="" class="h-full w-full object-cover" />
+                    <img [src]="video.thumbnailUrl | mediaUrl" alt="" class="h-full w-full object-cover" />
                   } @else {
                     <svg lucideVideo [size]="20"></svg>
                   }
@@ -42,18 +42,18 @@
                 <p class="font-medium text-ink">{{ video.title }}</p>
                 <p class="text-xs text-ink-muted">{{ video.lessonName }}</p>
               </td>
-              <td>{{ video.stage | stageLabel }}</td>
-              <td>{{ video.durationMinutes }} د</td>
+              <td>{{ video.stageName }}</td>
+              <td>{{ video.duration }} د</td>
               <td>
                 <span
                   class="rounded-full px-2.5 py-1 text-xs font-medium"
                   [class]="
-                    video.status === 'published'
+                    video.isPublished
                       ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'
                       : 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400'
                   "
                 >
-                  {{ video.status === 'published' ? 'منشور' : 'مسودة' }}
+                  {{ video.isPublished ? 'منشور' : 'مسودة' }}
                 </span>
               </td>
               <td>

@@ -21,7 +21,7 @@
             <th>المرحلة</th>
             <th>عدد الأسئلة</th>
             <th>المدة</th>
-            <th>الحالة</th>
+            <th>الدرجة الكلية</th>
             <th>إجراءات</th>
           </tr>
         </thead>
@@ -34,21 +34,10 @@
                   <p class="font-medium text-ink">{{ exam.title }}</p>
                 </div>
               </td>
-              <td>{{ exam.stage | stageLabel }}</td>
-              <td>{{ exam.questionCount }}</td>
-              <td>{{ exam.durationMinutes }} د</td>
-              <td>
-                <span
-                  class="rounded-full px-2.5 py-1 text-xs font-medium"
-                  [class]="
-                    exam.status === 'published'
-                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'
-                      : 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400'
-                  "
-                >
-                  {{ exam.status === 'published' ? 'منشور' : 'مسودة' }}
-                </span>
-              </td>
+              <td>{{ exam.stageName }}</td>
+              <td>{{ exam.questions.length }}</td>
+              <td>{{ exam.duration }} د</td>
+              <td>{{ exam.totalMarks }}</td>
               <td>
                 <div class="flex items-center gap-1">
                   <button

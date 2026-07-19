@@ -20,7 +20,6 @@
             <th>العنوان</th>
             <th>المرحلة</th>
             <th>تاريخ الرفع</th>
-            <th>عدد التحميلات</th>
             <th>إجراءات</th>
           </tr>
         </thead>
@@ -36,14 +35,8 @@
                   </div>
                 </div>
               </td>
-              <td>{{ pdf.stage | stageLabel }}</td>
-              <td>{{ pdf.uploadDate }}</td>
-              <td>
-                <span class="inline-flex items-center gap-1">
-                  <svg lucideDownload [size]="14" class="text-ink-muted"></svg>
-                  {{ pdf.downloadCount }}
-                </span>
-              </td>
+              <td>{{ pdf.stageName }}</td>
+              <td>{{ pdf.createdAt | date: 'mediumDate' }}</td>
               <td>
                 <div class="flex items-center gap-1">
                   <button

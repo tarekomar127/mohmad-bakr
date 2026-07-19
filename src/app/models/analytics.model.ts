@@ -1,4 +1,4 @@
-import { EducationalStage } from './educational-stage.model';
+import { EducationalStage } from './api.model';
 
 export interface DashboardStats {
   totalStudents: number;
@@ -6,25 +6,22 @@ export interface DashboardStats {
   totalPdfs: number;
   totalExams: number;
   totalAnnouncements: number;
-  activityRate: number;
-}
-
-export interface SeriesChartData {
-  labels: string[];
-  values: number[];
+  totalNotifications: number;
 }
 
 export interface StageDistributionItem {
   stage: EducationalStage;
   studentCount: number;
-  videoCount: number;
-  pdfCount: number;
-  examCount: number;
 }
 
 export interface StudentRankEntry {
   studentId: string;
   studentName: string;
-  averageScore: number;
-  progressPercent: number;
+  averagePercentage: number;
+  resultsCount: number;
+}
+
+export interface ScoreBucket {
+  label: string;
+  count: number;
 }

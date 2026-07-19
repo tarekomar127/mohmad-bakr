@@ -1,143 +1,110 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { Observable, delay, of, throwError } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { AuthSession, AuthUser, EducationalStage, MockCredential, Student } from '../../models';
-import { MOCK_CREDENTIALS, MOCK_TEACHER } from '../../mock-data';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import {
+  ApiResponse,
+  AuthSession,
+  AuthUser,
+  ChangePasswordRequest,
+  EducationalStage,
+  LoginRequest,
+  RegisterRequest,
+  TokenResponse,
+  UserRole,
+} from '../../models';
 import { readJson, writeJson, removeKey } from '../../shared/utils/local-store-sync';
-import { StudentsService } from '../../services/students.service';
+import { decodeJwt } from '../utils/jwt.util';
 
 const SESSION_KEY = 'auth_session';
-const EXTRA_CREDENTIALS_KEY = 'mock_extra_credentials';
-const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
-
-export interface SignupPayload {
-  studentName: string;
-  parentName: string;
-  studentPhone: string;
-  parentPhone: string;
-  stage: EducationalStage;
-  gender: 'male' | 'female';
-  governorate: string;
-  city: string;
-  email: string;
-  password: string;
-}
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly studentsService = inject(StudentsService);
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = `${environment.apiUrl}/Auth`;
 
-  readonly currentUser = signal<AuthUser | null>(this.restoreSession());
+  readonly currentUser = signal<AuthUser | null>(this.restoreSession()?.user ?? null);
   readonly isAuthenticated = computed(() => this.currentUser() !== null);
 
   login(email: string, password: string, rememberMe = false): Observable<AuthUser> {
-    return of(null).pipe(
-      delay(500),
-      map(() => {
-        const credential = this.allCredentials().find(
-          (c) => c.email.toLowerCase() === email.trim().toLowerCase() && c.password === password,
-        );
-        if (!credential) {
-          throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة');
-        }
-        const user = this.resolveUser(credential);
-        this.persistSession(user, rememberMe);
-        this.currentUser.set(user);
-        return user;
-      }),
+    const body: LoginRequest = { email: email.trim(), password };
+    return this.http.post<ApiResponse<TokenResponse>>(`${this.baseUrl}/login`, body).pipe(
+      map((res) => this.handleTokenResponse(res, rememberMe)),
     );
   }
 
-  registerStudent(payload: SignupPayload): Observable<AuthUser> {
-    return of(null).pipe(
-      delay(500),
-      map(() => {
-        const existing = this.allCredentials().find(
-          (c) => c.email.toLowerCase() === payload.email.trim().toLowerCase(),
-        );
-        if (existing) {
-          throw new Error('يوجد حساب مسجل بالفعل بهذا البريد الإلكتروني');
-        }
-
-        const id = `stu-${Date.now()}`;
-        const newStudent: Student = {
-          id,
-          studentName: payload.studentName,
-          parentName: payload.parentName,
-          studentPhone: payload.studentPhone,
-          parentPhone: payload.parentPhone,
-          email: payload.email,
-          stage: payload.stage,
-          gender: payload.gender,
-          governorate: payload.governorate,
-          city: payload.city,
-          status: 'active',
-          progressPercent: 0,
-          averageScore: 0,
-          completedLessons: 0,
-          createdAt: new Date().toISOString().slice(0, 10),
-        };
-        this.studentsService.add(newStudent);
-
-        const newCredential: MockCredential = {
-          email: payload.email,
-          password: payload.password,
-          userId: id,
-          role: 'student',
-        };
-        const extra = readJson<MockCredential[]>(EXTRA_CREDENTIALS_KEY, []);
-        writeJson(EXTRA_CREDENTIALS_KEY, [...extra, newCredential]);
-
-        const user = this.resolveUser(newCredential);
-        this.persistSession(user, true);
-        this.currentUser.set(user);
-        return user;
-      }),
+  registerStudent(payload: RegisterRequest): Observable<AuthUser> {
+    return this.http.post<ApiResponse<TokenResponse>>(`${this.baseUrl}/register`, payload).pipe(
+      map((res) => this.handleTokenResponse(res, true)),
     );
+  }
+
+  changePassword(request: ChangePasswordRequest): Observable<ApiResponse<unknown>> {
+    return this.http.post<ApiResponse<unknown>>(`${this.baseUrl}/change-password`, request);
+  }
+
+  refreshAccessToken(): Observable<AuthUser | null> {
+    const session = readJson<AuthSession | null>(SESSION_KEY, null) ?? this.sessionFromSessionStorage();
+    if (!session?.refreshToken) {
+      this.logout();
+      return new Observable((subscriber) => {
+        subscriber.next(null);
+        subscriber.complete();
+      });
+    }
+    return this.http
+      .post<ApiResponse<TokenResponse>>(`${this.baseUrl}/refresh-token`, {
+        refreshToken: session.refreshToken,
+      })
+      .pipe(map((res) => this.handleTokenResponse(res, session.rememberMe)));
   }
 
   logout(): void {
+    const session = readJson<AuthSession | null>(SESSION_KEY, null) ?? this.sessionFromSessionStorage();
     removeKey(SESSION_KEY);
     sessionStorage.removeItem(SESSION_KEY);
     this.currentUser.set(null);
+    if (session?.refreshToken) {
+      this.http
+        .post(`${this.baseUrl}/revoke-token`, { refreshToken: session.refreshToken })
+        .subscribe({ error: () => void 0 });
+    }
   }
 
-  private allCredentials(): MockCredential[] {
-    return [...MOCK_CREDENTIALS, ...readJson<MockCredential[]>(EXTRA_CREDENTIALS_KEY, [])];
+  getAccessToken(): string | null {
+    const session = readJson<AuthSession | null>(SESSION_KEY, null) ?? this.sessionFromSessionStorage();
+    return session?.accessToken ?? null;
   }
 
-  private resolveUser(credential: MockCredential): AuthUser {
-    if (credential.role === 'admin') {
-      return {
-        id: MOCK_TEACHER.id,
-        email: credential.email,
-        role: 'admin',
-        name: MOCK_TEACHER.name,
-        avatarUrl: MOCK_TEACHER.profileImageUrl,
-      };
+  private handleTokenResponse(res: ApiResponse<TokenResponse>, rememberMe: boolean): AuthUser {
+    if (!res.success || !res.data) {
+      throw new Error(res.message || 'حدث خطأ أثناء المصادقة');
     }
-    const student = this.studentsService.getById(credential.userId);
-    if (!student) {
-      throw new Error('تعذر العثور على بيانات الطالب');
-    }
-    return {
-      id: student.id,
-      email: student.email,
-      role: 'student',
-      name: student.studentName,
-      stage: student.stage,
-      avatarUrl: student.avatarUrl,
+    const token = res.data;
+    const claims = decodeJwt(token.accessToken);
+    const role: UserRole = token.role === 'Admin' ? 'Admin' : 'Student';
+    const stageClaim = claims?.['EducationalStage'];
+    const user: AuthUser = {
+      id: claims?.sub ?? '',
+      email: token.email,
+      role,
+      name: token.fullName,
+      stage: stageClaim ? (Number(stageClaim) as EducationalStage) : undefined,
     };
-  }
-
-  private persistSession(user: AuthUser, rememberMe: boolean): void {
     const session: AuthSession = {
       user,
-      token: `mock-token-${user.id}-${Date.now()}`,
-      expiresAt: Date.now() + SESSION_TTL_MS,
+      accessToken: token.accessToken,
+      refreshToken: token.refreshToken,
+      expiresAt: new Date(token.expiration).getTime(),
       rememberMe,
     };
-    if (rememberMe) {
+    this.persistSession(session);
+    this.currentUser.set(user);
+    return user;
+  }
+
+  private persistSession(session: AuthSession): void {
+    if (session.rememberMe) {
       writeJson(SESSION_KEY, session);
       sessionStorage.removeItem(SESSION_KEY);
     } else {
@@ -146,17 +113,18 @@ export class AuthService {
     }
   }
 
-  private restoreSession(): AuthUser | null {
+  private sessionFromSessionStorage(): AuthSession | null {
+    try {
+      const raw = sessionStorage.getItem(SESSION_KEY);
+      return raw ? (JSON.parse(raw) as AuthSession) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private restoreSession(): AuthSession | null {
     const fromLocal = readJson<AuthSession | null>(SESSION_KEY, null);
-    const fromSession = (() => {
-      try {
-        const raw = sessionStorage.getItem(SESSION_KEY);
-        return raw ? (JSON.parse(raw) as AuthSession) : null;
-      } catch {
-        return null;
-      }
-    })();
-    const session = fromLocal ?? fromSession;
+    const session = fromLocal ?? this.sessionFromSessionStorage();
     if (!session || session.expiresAt < Date.now()) {
       if (session) {
         removeKey(SESSION_KEY);
@@ -164,6 +132,6 @@ export class AuthService {
       }
       return null;
     }
-    return session.user;
+    return session;
   }
 }

@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LucideEye, LucideEyeOff, LucideLock, LucideMail } from '@lucide/angular';
@@ -43,14 +44,6 @@ export class Login {
     this.showForgotNotice.update((v) => !v);
   }
 
-  fillDemo(role: 'admin' | 'student'): void {
-    if (role === 'admin') {
-      this.form.patchValue({ email: 'admin@alshafei.mock', password: 'Admin@123' });
-    } else {
-      this.form.patchValue({ email: 'yousef.ahmed@student.mock', password: 'Student@123' });
-    }
-  }
-
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -64,12 +57,12 @@ export class Login {
       next: (user) => {
         this.isSubmitting.set(false);
         const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
-        const fallback = user.role === 'admin' ? '/admin/dashboard' : '/student/dashboard';
+        const fallback = user.role === 'Admin' ? '/admin/dashboard' : '/student/dashboard';
         this.router.navigateByUrl(returnUrl || fallback);
       },
-      error: (err: Error) => {
+      error: (err: HttpErrorResponse) => {
         this.isSubmitting.set(false);
-        this.errorMessage.set(err.message || 'حدث خطأ أثناء تسجيل الدخول');
+        this.errorMessage.set(err.error?.message || 'البريد الإلكتروني أو كلمة المرور غير صحيحة');
       },
     });
   }

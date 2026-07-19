@@ -1,4 +1,4 @@
-export * from './educational-stage.model';
+export * from './api.model';
 export * from './student.model';
 export * from './teacher.model';
 export * from './video.model';
@@ -7,5 +7,6 @@ export * from './exam.model';
 export * from './exam-result.model';
 export * from './announcement.model';
 export * from './notification.model';
+export * from './structure.model';
 export * from './auth.model';
 export * from './analytics.model';

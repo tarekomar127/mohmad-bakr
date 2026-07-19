@@ -1,9 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import {
   LucideChartBar,
-  LucideCircleCheckBig,
   LucideChevronDown,
   LucideClipboardCheck,
   LucideFileText,
@@ -14,10 +14,11 @@ import {
   LucideVideo,
 } from '@lucide/angular';
 import { StatCard } from '../../../shared/components/stat-card/stat-card';
-import { GalleryPlaceholder } from '../../../shared/components/gallery-placeholder/gallery-placeholder';
 import { BrandIcon } from '../../../shared/components/brand-icon/brand-icon';
-import { MOCK_TEACHER } from '../../../mock-data';
-import { MOCK_STUDENTS, MOCK_VIDEOS, MOCK_EXAMS } from '../../../mock-data';
+import { TeacherService } from '../../../services/teacher.service';
+import { GALLERY_IMAGES } from '../../../core/constants/gallery';
+import { SITE_CONTACT } from '../../../core/constants/site-contact';
+import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
 
 interface Testimonial {
   name: string;
@@ -36,9 +37,7 @@ interface FaqItem {
     RouterLink,
     ReactiveFormsModule,
     StatCard,
-    GalleryPlaceholder,
     LucideChartBar,
-    LucideCircleCheckBig,
     LucideChevronDown,
     LucideClipboardCheck,
     LucideFileText,
@@ -48,19 +47,23 @@ interface FaqItem {
     LucideStar,
     LucideVideo,
     BrandIcon,
+    MediaUrlPipe,
   ],
   templateUrl: './landing.html',
   styleUrl: './landing.scss',
 })
 export class Landing {
-  private readonly fb = new FormBuilder();
+  private readonly fb = inject(FormBuilder);
+  private readonly teacherService = inject(TeacherService);
 
-  readonly teacher = MOCK_TEACHER;
+  readonly teacher = toSignal(this.teacherService.load(), { initialValue: null });
+  readonly galleryImages = GALLERY_IMAGES;
+  readonly contact = SITE_CONTACT;
 
   readonly stats = {
-    students: MOCK_STUDENTS.length * 45,
-    lessons: MOCK_VIDEOS.length * 6,
-    exams: MOCK_EXAMS.length * 4,
+    students: 500,
+    lessons: 90,
+    exams: 40,
     successRate: 95,
   };
 
@@ -99,7 +102,7 @@ export class Landing {
     { question: 'كيف يمكنني إنشاء حساب لابني/ابنتي؟', answer: 'يمكنكم إنشاء حساب من صفحة "إنشاء حساب" بإدخال بيانات الطالب وولي الأمر واختيار المرحلة الدراسية المناسبة.' },
     { question: 'هل يمكن متابعة تقدم الطالب؟', answer: 'نعم، توفر لوحة تحكم الطالب نسبة التقدم ومتوسط الدرجات وعدد الدروس المكتملة بشكل مستمر.' },
     { question: 'هل الفيديوهات والملفات متاحة في أي وقت؟', answer: 'نعم، جميع الفيديوهات وملفات PDF المنشورة متاحة على مدار الساعة لطلاب المرحلة المخصصة لها.' },
-    { question: 'كيف أتواصل مع الدعم الفني؟', answer: 'يمكنكم التواصل معنا عبر نموذج التواصل أسفل الصفحة أو عبر البريد الإلكتروني الموضح في التذييل.' },
+    { question: 'كيف أتواصل مع الدعم الفني؟', answer: 'يمكنكم التواصل معنا عبر نموذج التواصل أسفل الصفحة أو عبر رقم الدعم الفني الموضح في التذييل.' },
   ];
 
   readonly openFaqIndex = signal<number | null>(0);

@@ -6,12 +6,15 @@
         <span class="text-lg">منصة الشافعي التعليمية</span>
       </div>
       <p class="mt-4 max-w-md text-sm leading-7 text-ink-muted">
-        منصة تعليمية متخصصة في اللغة العربية لجميع المراحل الدراسية، مع الأستاذ {{ teacher.name }}،
+        منصة تعليمية متخصصة في اللغة العربية لجميع المراحل الدراسية
+        @if (teacher(); as t) {
+          ، مع الأستاذ {{ t.teacherName }}
+        }،
         تجمع بين الفيديوهات التفاعلية وملفات PDF والامتحانات الإلكترونية ومتابعة مستوى كل طالب أولاً بأول.
       </p>
       <div class="mt-5 flex items-center gap-3">
         <a
-          [href]="teacher.socialLinks.youtube"
+          [href]="contact.socialLinks.youtube"
           target="_blank"
           rel="noopener"
           class="flex h-9 w-9 items-center justify-center rounded-full bg-page text-ink-muted transition-colors hover:bg-primary hover:text-white"
@@ -20,7 +23,7 @@
           <app-brand-icon name="youtube" [size]="16"></app-brand-icon>
         </a>
         <a
-          [href]="teacher.socialLinks.facebook"
+          [href]="contact.socialLinks.facebook"
           target="_blank"
           rel="noopener"
           class="flex h-9 w-9 items-center justify-center rounded-full bg-page text-ink-muted transition-colors hover:bg-primary hover:text-white"
@@ -29,7 +32,7 @@
           <app-brand-icon name="facebook" [size]="16"></app-brand-icon>
         </a>
         <a
-          [href]="teacher.socialLinks.tiktok"
+          [href]="contact.socialLinks.tiktok"
           target="_blank"
           rel="noopener"
           class="flex h-9 w-9 items-center justify-center rounded-full bg-page text-ink-muted transition-colors hover:bg-primary hover:text-white"
@@ -38,7 +41,7 @@
           <app-brand-icon name="tiktok" [size]="16"></app-brand-icon>
         </a>
         <a
-          [href]="teacher.socialLinks.whatsapp"
+          [href]="contact.socialLinks.whatsapp"
           target="_blank"
           rel="noopener"
           class="flex h-9 w-9 items-center justify-center rounded-full bg-page text-ink-muted transition-colors hover:bg-primary hover:text-white"
@@ -64,11 +67,11 @@
       <ul class="mt-4 space-y-2.5 text-sm text-ink-muted">
         <li class="flex items-center gap-2">
           <svg lucidePhone [size]="14" class="text-primary"></svg>
-          <span dir="ltr">{{ teacher.contactPhone }}</span>
+          <span dir="ltr">{{ contact.contactPhone }}</span>
         </li>
         <li class="flex items-center gap-2">
           <svg lucidePhone [size]="14" class="text-primary"></svg>
-          <span dir="ltr">{{ teacher.supportPhone }}</span>
+          <span dir="ltr">{{ contact.supportPhone }}</span>
           <span class="text-xs">(الدعم)</span>
         </li>
       </ul>
@@ -76,7 +79,7 @@
   </div>
 
   <div class="border-t border-line px-4 py-5 text-center text-xs text-ink-muted sm:px-6 lg:px-8">
-    <p>&copy; {{ year }} منصة الشافعي التعليمية - جميع الحقوق محفوظة لـ {{ teacher.name }}.</p>
+    <p>&copy; {{ year }} منصة الشافعي التعليمية - جميع الحقوق محفوظة{{ teacher() ? ' لـ ' + teacher()!.teacherName : '' }}.</p>
     <p class="mt-1">تم تصميم وتطوير الموقع بواسطة Eng Fathy Ahmed &amp; Eng Tarek Omar</p>
   </div>
 </footer>

@@ -1,11 +1,12 @@
 import { Component, input } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { LucideMegaphone } from '@lucide/angular';
 import { Announcement } from '../../../models';
 import { StageLabelPipe } from '../../pipes/stage-label.pipe';
 
 @Component({
   selector: 'app-announcement-banner',
-  imports: [LucideMegaphone, StageLabelPipe],
+  imports: [LucideMegaphone, StageLabelPipe, DatePipe],
   templateUrl: './announcement-banner.html',
   styleUrl: './announcement-banner.scss',
 })

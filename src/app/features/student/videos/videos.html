@@ -9,7 +9,7 @@
   } @else {
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       @for (video of videos(); track video.id) {
-        <app-video-card [video]="video" [progressPercent]="progressFor(video)" (watch)="watch(video)"></app-video-card>
+        <app-video-card [video]="video" (watch)="watch(video)"></app-video-card>
       }
     </div>
   }

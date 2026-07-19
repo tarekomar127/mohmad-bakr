@@ -21,8 +21,8 @@
         <div class="grid gap-4 sm:grid-cols-2">
           <div>
             <label class="mb-1.5 block text-sm font-medium text-ink">اسم الطالب</label>
-            <input formControlName="studentName" type="text" class="field-control" placeholder="اسم الطالب الكامل" />
-            @if (f.studentName.invalid && f.studentName.touched) {
+            <input formControlName="fullName" type="text" class="field-control" placeholder="اسم الطالب الكامل" />
+            @if (f.fullName.invalid && f.fullName.touched) {
               <p class="mt-1 text-xs text-red-600">اسم الطالب مطلوب (3 أحرف على الأقل)</p>
             }
           </div>
@@ -55,13 +55,13 @@
         <div class="grid gap-4 sm:grid-cols-2">
           <div>
             <label class="mb-1.5 block text-sm font-medium text-ink">المرحلة التعليمية</label>
-            <select formControlName="stage" class="field-control">
-              <option value="" disabled>اختر المرحلة التعليمية</option>
+            <select formControlName="educationalStage" class="field-control">
+              <option [ngValue]="null" disabled>اختر المرحلة التعليمية</option>
               @for (stage of stages; track stage) {
-                <option [value]="stage">{{ stageLabels[stage] }}</option>
+                <option [ngValue]="stage">{{ stageLabels[stage] }}</option>
               }
             </select>
-            @if (f.stage.invalid && f.stage.touched) {
+            @if (f.educationalStage.invalid && f.educationalStage.touched) {
               <p class="mt-1 text-xs text-red-600">يرجى اختيار المرحلة التعليمية</p>
             }
           </div>
@@ -71,13 +71,13 @@
               <label
                 class="flex flex-1 cursor-pointer items-center justify-center rounded-xl border border-line px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:text-primary"
               >
-                <input type="radio" formControlName="gender" value="male" class="hidden" />
+                <input type="radio" formControlName="gender" [value]="1" class="hidden" />
                 ذكر
               </label>
               <label
                 class="flex flex-1 cursor-pointer items-center justify-center rounded-xl border border-line px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:text-primary"
               >
-                <input type="radio" formControlName="gender" value="female" class="hidden" />
+                <input type="radio" formControlName="gender" [value]="2" class="hidden" />
                 أنثى
               </label>
             </div>

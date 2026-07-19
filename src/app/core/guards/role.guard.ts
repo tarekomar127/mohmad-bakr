@@ -4,8 +4,8 @@ import { AuthService } from '../services/auth.service';
 import { UserRole } from '../../models';
 
 const HOME_BY_ROLE: Record<UserRole, string> = {
-  admin: '/admin/dashboard',
-  student: '/student/dashboard',
+  Admin: '/admin/dashboard',
+  Student: '/student/dashboard',
 };
 
 export const roleGuard: CanActivateFn = (route) => {

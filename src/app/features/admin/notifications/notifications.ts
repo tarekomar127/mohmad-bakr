@@ -4,7 +4,7 @@ import { LucideSend } from '@lucide/angular';
 import { NotificationItem } from '../../../shared/components/notification-item/notification-item';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { NotificationsService } from '../../../services/notifications.service';
-import { ALL_STAGES, AppNotification, STAGE_LABELS, StageTarget } from '../../../models';
+import { ALL_STAGES, AppNotification, EducationalStage, STAGE_LABELS } from '../../../models';
 
 @Component({
   selector: 'app-notifications',
@@ -18,14 +18,22 @@ export class Notifications {
 
   readonly stages = ALL_STAGES;
   readonly stageLabels = STAGE_LABELS;
-  readonly notifications = this.notificationsService.notifications;
+  readonly notifications = signal<AppNotification[]>([]);
   readonly justSent = signal(false);
+
+  constructor() {
+    this.reload();
+  }
 
   readonly form = this.fb.group({
     title: ['', Validators.required],
     message: ['', Validators.required],
-    targetStage: ['all' as StageTarget, Validators.required],
+    targetStage: [null as EducationalStage | null],
   });
+
+  reload(): void {
+    this.notificationsService.getAll().subscribe((res) => this.notifications.set(res.items));
+  }
 
   send(): void {
     if (this.form.invalid) {
@@ -33,17 +41,13 @@ export class Notifications {
       return;
     }
     const value = this.form.getRawValue();
-    const notification: AppNotification = {
-      id: `notif-${Date.now()}`,
-      title: value.title!,
-      message: value.message!,
-      targetStage: value.targetStage as StageTarget,
-      kind: 'general',
-      sentAt: new Date().toISOString(),
-    };
-    this.notificationsService.send(notification);
-    this.form.reset({ targetStage: 'all' });
-    this.justSent.set(true);
-    setTimeout(() => this.justSent.set(false), 3000);
+    this.notificationsService
+      .send({ title: value.title!, message: value.message!, targetStage: value.targetStage })
+      .subscribe(() => {
+        this.form.reset({ targetStage: null });
+        this.justSent.set(true);
+        this.reload();
+        setTimeout(() => this.justSent.set(false), 3000);
+      });
   }
 }

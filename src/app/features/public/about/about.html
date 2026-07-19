@@ -1,83 +1,51 @@
-<section class="bg-gradient-to-b from-accent/60 to-page py-14 dark:from-accent/10">
-  <div class="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-3 lg:px-8">
-    <div class="lg:col-span-1">
-      <div class="overflow-hidden rounded-3xl border border-line shadow-[var(--shadow-card-hover)]">
-        <img [src]="teacher.profileImageUrl" [alt]="teacher.name" class="h-full w-full object-cover" />
+@if (teacher(); as t) {
+  <section class="bg-gradient-to-b from-accent/60 to-page py-14 dark:from-accent/10">
+    <div class="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-3 lg:px-8">
+      <div class="lg:col-span-1">
+        <div class="overflow-hidden rounded-3xl border border-line shadow-[var(--shadow-card-hover)]">
+          <img [src]="t.profileImageUrl | mediaUrl" [alt]="t.teacherName" class="h-full w-full object-cover" />
+        </div>
+      </div>
+      <div class="lg:col-span-2">
+        <span class="text-xs font-semibold text-primary">نبذة عن المعلم</span>
+        <h1 class="mt-2 text-3xl font-extrabold text-ink sm:text-4xl">{{ t.teacherName }}</h1>
+        <p class="mt-5 whitespace-pre-line text-sm leading-8 text-ink-muted">{{ t.biography }}</p>
       </div>
     </div>
-    <div class="lg:col-span-2">
-      <span class="text-xs font-semibold text-primary">نبذة عن المعلم</span>
-      <h1 class="mt-2 text-3xl font-extrabold text-ink sm:text-4xl">{{ teacher.name }}</h1>
-      <p class="mt-1 text-base font-medium text-ink-muted">معلم {{ teacher.subject }} - {{ teacher.brandName }}</p>
-      <p class="mt-5 whitespace-pre-line text-sm leading-8 text-ink-muted">{{ teacher.bio }}</p>
-    </div>
-  </div>
-</section>
+  </section>
 
-<section class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-  <div class="grid gap-8 lg:grid-cols-3">
-    <div class="rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)]">
-      <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-accent text-primary">
-        <svg lucideGraduationCap [size]="22"></svg>
+  <section class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+    <div class="grid gap-8 sm:grid-cols-2">
+      <div class="rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)]">
+        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-accent text-primary">
+          <svg lucideGraduationCap [size]="22"></svg>
+        </div>
+        <h2 class="mt-4 text-base font-bold text-ink">المؤهلات العلمية</h2>
+        <p class="mt-3 text-sm leading-7 text-ink-muted">{{ t.qualifications }}</p>
       </div>
-      <h2 class="mt-4 text-base font-bold text-ink">المؤهلات العلمية</h2>
-      <ul class="mt-3 space-y-2 text-sm leading-6 text-ink-muted">
-        @for (q of teacher.qualifications; track q) {
-          <li class="flex items-start gap-2">
-            <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary"></span>
-            {{ q }}
-          </li>
+
+      <div class="rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)]">
+        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-accent text-primary">
+          <svg lucideBriefcase [size]="22"></svg>
+        </div>
+        <h2 class="mt-4 text-base font-bold text-ink">الخبرة</h2>
+        <p class="mt-3 text-sm leading-7 text-ink-muted">{{ t.experience }}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-surface py-14">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="text-center">
+        <h2 class="text-2xl font-extrabold text-ink sm:text-3xl">معرض الصور</h2>
+      </div>
+      <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        @for (src of galleryImages; track src) {
+          <div class="aspect-square overflow-hidden rounded-2xl border border-line">
+            <img [src]="src" alt="" class="h-full w-full object-cover" />
+          </div>
         }
-      </ul>
-    </div>
-
-    <div class="rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)]">
-      <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-accent text-primary">
-        <svg lucideBadgeCheck [size]="22"></svg>
       </div>
-      <h2 class="mt-4 text-base font-bold text-ink">الشهادات</h2>
-      <ul class="mt-3 space-y-2 text-sm leading-6 text-ink-muted">
-        @for (c of teacher.certificates; track c.title) {
-          <li class="flex items-start justify-between gap-2">
-            <span class="flex items-start gap-2">
-              <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary"></span>
-              {{ c.title }}
-            </span>
-            @if (c.year) {
-              <span class="shrink-0 text-xs text-ink-muted">{{ c.year }}</span>
-            }
-          </li>
-        }
-      </ul>
     </div>
-
-    <div class="rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)]">
-      <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-accent text-primary">
-        <svg lucideTrophy [size]="22"></svg>
-      </div>
-      <h2 class="mt-4 text-base font-bold text-ink">الإنجازات</h2>
-      <ul class="mt-3 space-y-2 text-sm leading-6 text-ink-muted">
-        @for (a of teacher.achievements; track a) {
-          <li class="flex items-start gap-2">
-            <svg lucideAward [size]="14" class="mt-0.5 shrink-0 text-primary"></svg>
-            {{ a }}
-          </li>
-        }
-      </ul>
-    </div>
-  </div>
-</section>
-
-<section class="bg-surface py-14">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="text-center">
-      <h2 class="text-2xl font-extrabold text-ink sm:text-3xl">معرض الصور</h2>
-      <p class="mt-2 text-sm text-ink-muted">لقطات من رحلة {{ teacher.name }} التعليمية</p>
-    </div>
-    <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6">
-      @for (i of [1, 2, 3, 4, 5, 6, 7, 8]; track i) {
-        <app-gallery-placeholder></app-gallery-placeholder>
-      }
-    </div>
-  </div>
-</section>
+  </section>
+}

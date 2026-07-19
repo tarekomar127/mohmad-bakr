@@ -15,13 +15,13 @@
       </div>
       <div class="rounded-2xl border border-line bg-surface p-5 text-center shadow-[var(--shadow-card)]">
         <svg lucideCircleCheck [size]="22" class="mx-auto text-emerald-600 dark:text-emerald-400"></svg>
-        <p class="mt-2 text-2xl font-bold text-ink">{{ totalCorrect() }}</p>
-        <p class="mt-1 text-sm text-ink-muted">إجابات صحيحة</p>
+        <p class="mt-2 text-2xl font-bold text-ink">{{ bestPercentage() }}%</p>
+        <p class="mt-1 text-sm text-ink-muted">أفضل نتيجة</p>
       </div>
       <div class="rounded-2xl border border-line bg-surface p-5 text-center shadow-[var(--shadow-card)]">
-        <svg lucideCircleX [size]="22" class="mx-auto text-red-600 dark:text-red-400"></svg>
-        <p class="mt-2 text-2xl font-bold text-ink">{{ totalWrong() }}</p>
-        <p class="mt-1 text-sm text-ink-muted">إجابات خاطئة</p>
+        <svg lucideTrendingUp [size]="22" class="mx-auto text-primary"></svg>
+        <p class="mt-2 text-2xl font-bold text-ink">{{ results().length }}</p>
+        <p class="mt-1 text-sm text-ink-muted">عدد الامتحانات</p>
       </div>
     </div>
 
@@ -39,19 +39,15 @@
               <th class="px-4 py-3 text-start font-semibold">التاريخ</th>
               <th class="px-4 py-3 text-start font-semibold">الدرجة</th>
               <th class="px-4 py-3 text-start font-semibold">النسبة</th>
-              <th class="px-4 py-3 text-start font-semibold">صحيح</th>
-              <th class="px-4 py-3 text-start font-semibold">خاطئ</th>
             </tr>
           </thead>
           <tbody>
             @for (r of sortedResults(); track r.id) {
               <tr class="border-b border-line last:border-0">
                 <td class="px-4 py-3 font-medium text-ink">{{ r.examTitle }}</td>
-                <td class="px-4 py-3 text-ink-muted">{{ r.takenAt }}</td>
-                <td class="px-4 py-3 text-ink-muted">{{ r.score }} / {{ r.totalMarks }}</td>
+                <td class="px-4 py-3 text-ink-muted">{{ r.solvedAt }}</td>
+                <td class="px-4 py-3 text-ink-muted">{{ r.score }}</td>
                 <td class="px-4 py-3 font-semibold text-primary">{{ r.percentage }}%</td>
-                <td class="px-4 py-3 text-emerald-600 dark:text-emerald-400">{{ r.correctCount }}</td>
-                <td class="px-4 py-3 text-red-600 dark:text-red-400">{{ r.wrongCount }}</td>
               </tr>
             }
           </tbody>

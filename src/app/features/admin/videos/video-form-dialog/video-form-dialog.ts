@@ -1,50 +1,77 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideUpload } from '@lucide/angular';
 import { Modal } from '../../../../shared/components/modal/modal';
-import { ALL_STAGES, ContentStatus, STAGE_LABELS, Video } from '../../../../models';
-
-export interface VideoFormResult {
-  title: string;
-  description: string;
-  thumbnailUrl: string;
-  stage: (typeof ALL_STAGES)[number];
-  lessonName: string;
-  durationMinutes: number;
-  status: ContentStatus;
-}
+import { StageNode, TermNode, UnitNode, Video, VideoCreateDto } from '../../../../models';
+import { StructureService } from '../../../../services/structure.service';
+import { VideosService } from '../../../../services/videos.service';
 
 @Component({
   selector: 'app-video-form-dialog',
-  imports: [Modal, ReactiveFormsModule, LucideUpload],
+  imports: [Modal, ReactiveFormsModule, FormsModule, LucideUpload],
   templateUrl: './video-form-dialog.html',
   styleUrl: './video-form-dialog.scss',
 })
 export class VideoFormDialog {
-  private readonly dialogRef = inject(MatDialogRef<VideoFormDialog, VideoFormResult | undefined>);
+  private readonly dialogRef = inject(MatDialogRef<VideoFormDialog, VideoCreateDto | undefined>);
   readonly existing = inject<Video | null>(MAT_DIALOG_DATA);
   private readonly fb = inject(FormBuilder);
+  private readonly structureService = inject(StructureService);
+  private readonly videosService = inject(VideosService);
 
-  readonly stages = ALL_STAGES;
-  readonly stageLabels = STAGE_LABELS;
-  readonly thumbnailPreview = signal<string>(this.existing?.thumbnailUrl ?? '');
+  readonly stages = this.structureService.stages;
+  readonly uploading = signal(false);
+  readonly uploadedVideoUrl = signal(this.existing?.videoUrl ?? '');
+  readonly fileName = signal('');
+
+  readonly selectedStageId = signal('');
+  readonly selectedTermId = signal('');
+
+  readonly terms = computed<TermNode[]>(
+    () => this.stages().find((s: StageNode) => s.id === this.selectedStageId())?.terms ?? [],
+  );
+  readonly units = computed<UnitNode[]>(
+    () => this.terms().find((t) => t.id === this.selectedTermId())?.units ?? [],
+  );
 
   readonly form = this.fb.group({
     title: [this.existing?.title ?? '', Validators.required],
     description: [this.existing?.description ?? '', Validators.required],
-    stage: [this.existing?.stage ?? ('' as (typeof ALL_STAGES)[number] | ''), Validators.required],
-    lessonName: [this.existing?.lessonName ?? '', Validators.required],
-    durationMinutes: [this.existing?.durationMinutes ?? 20, [Validators.required, Validators.min(1)]],
-    status: [this.existing?.status ?? ('draft' as ContentStatus), Validators.required],
+    thumbnailUrl: [this.existing?.thumbnailUrl ?? ''],
+    lessonId: [this.existing?.lessonId ?? '', Validators.required],
+    duration: [this.existing?.duration ?? 20, [Validators.required, Validators.min(1)]],
+    isPublished: [this.existing?.isPublished ?? true],
   });
 
-  onThumbnailSelected(event: Event): void {
+  constructor() {
+    this.structureService.load().subscribe();
+  }
+
+  onStageChange(id: string): void {
+    this.selectedStageId.set(id);
+    this.selectedTermId.set('');
+    this.form.patchValue({ lessonId: '' });
+  }
+
+  onTermChange(id: string): void {
+    this.selectedTermId.set(id);
+    this.form.patchValue({ lessonId: '' });
+  }
+
+  onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-    if (file) {
-      this.thumbnailPreview.set(URL.createObjectURL(file));
-    }
+    if (!file) return;
+    this.fileName.set(file.name);
+    this.uploading.set(true);
+    this.videosService.uploadFile(file).subscribe({
+      next: (url) => {
+        this.uploadedVideoUrl.set(url);
+        this.uploading.set(false);
+      },
+      error: () => this.uploading.set(false),
+    });
   }
 
   close(): void {
@@ -52,7 +79,7 @@ export class VideoFormDialog {
   }
 
   save(): void {
-    if (this.form.invalid) {
+    if (this.form.invalid || !this.uploadedVideoUrl()) {
       this.form.markAllAsTouched();
       return;
     }
@@ -60,11 +87,11 @@ export class VideoFormDialog {
     this.dialogRef.close({
       title: value.title!,
       description: value.description!,
-      thumbnailUrl: this.thumbnailPreview(),
-      stage: value.stage as (typeof ALL_STAGES)[number],
-      lessonName: value.lessonName!,
-      durationMinutes: value.durationMinutes!,
-      status: value.status as ContentStatus,
+      thumbnailUrl: value.thumbnailUrl ?? '',
+      videoUrl: this.uploadedVideoUrl(),
+      lessonId: value.lessonId!,
+      duration: value.duration!,
+      isPublished: value.isPublished!,
     });
   }
 }

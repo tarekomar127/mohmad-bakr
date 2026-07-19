@@ -12,7 +12,9 @@
       }
 
       <div class="flex items-center gap-4">
-        <img [src]="avatarPreview()" alt="" class="h-16 w-16 rounded-full border border-line object-cover" />
+        @if (avatarPreview()) {
+          <img [src]="avatarPreview() | mediaUrl" alt="" class="h-16 w-16 rounded-full border border-line object-cover" />
+        }
         <label class="btn-outline cursor-pointer text-xs">
           <svg lucideUpload [size]="14"></svg>
           تغيير الصورة
@@ -21,35 +23,28 @@
       </div>
 
       <div>
-        <label class="mb-1.5 block text-sm font-medium text-ink">الاسم</label>
-        <input formControlName="name" type="text" class="field-control" />
+        <label class="mb-1.5 block text-sm font-medium text-ink">اسم المعلم</label>
+        <input formControlName="teacherName" type="text" class="field-control" />
       </div>
 
       <div>
         <label class="mb-1.5 block text-sm font-medium text-ink">النبذة التعريفية</label>
-        <textarea formControlName="bio" rows="4" class="field-control"></textarea>
+        <textarea formControlName="biography" rows="4" class="field-control"></textarea>
       </div>
 
-      <div class="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label class="mb-1.5 block text-sm font-medium text-ink">رابط يوتيوب</label>
-          <input formControlName="youtube" type="url" class="field-control" dir="ltr" />
-        </div>
-        <div>
-          <label class="mb-1.5 block text-sm font-medium text-ink">رابط فيسبوك</label>
-          <input formControlName="facebook" type="url" class="field-control" dir="ltr" />
-        </div>
-        <div>
-          <label class="mb-1.5 block text-sm font-medium text-ink">رابط انستجرام</label>
-          <input formControlName="instagram" type="url" class="field-control" dir="ltr" />
-        </div>
-        <div>
-          <label class="mb-1.5 block text-sm font-medium text-ink">رابط تيك توك</label>
-          <input formControlName="tiktok" type="url" class="field-control" dir="ltr" />
-        </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">المؤهلات</label>
+        <textarea formControlName="qualifications" rows="2" class="field-control"></textarea>
       </div>
 
-      <button type="submit" class="btn-primary">حفظ التعديلات</button>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">الخبرة</label>
+        <textarea formControlName="experience" rows="2" class="field-control"></textarea>
+      </div>
+
+      <button type="submit" class="btn-primary" [disabled]="saving()">
+        {{ saving() ? 'جارٍ الحفظ...' : 'حفظ التعديلات' }}
+      </button>
     </form>
   </div>
 
@@ -58,6 +53,11 @@
     <form [formGroup]="passwordForm" (ngSubmit)="savePassword()" class="mt-5 space-y-4">
       @if (passwordSaved()) {
         <div class="rounded-xl bg-accent px-4 py-3 text-sm font-medium text-primary">تم تغيير كلمة المرور بنجاح.</div>
+      }
+      @if (passwordError()) {
+        <div class="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600 dark:bg-red-500/10 dark:text-red-400">
+          {{ passwordError() }}
+        </div>
       }
       <div>
         <label class="mb-1.5 block text-sm font-medium text-ink">كلمة المرور الحالية</label>

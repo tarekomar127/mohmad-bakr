@@ -1,47 +1,52 @@
-import { Injectable, inject, signal } from '@angular/core';
-import { Observable, delay, of } from 'rxjs';
-import { Video } from '../models';
-import { MOCK_VIDEOS } from '../mock-data';
-import { readJson, writeJson } from '../shared/utils/local-store-sync';
-import { ContentScopeService } from '../core/services/content-scope.service';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { Observable, map } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { ApiResponse, EducationalStage, PagedResult, Video, VideoCreateDto, VideoUpdateDto } from '../models';
 
-const STORAGE_KEY = 'mock_videos';
+export interface VideosQuery {
+  search?: string;
+  stage?: EducationalStage;
+  pageNumber?: number;
+  pageSize?: number;
+}
 
 @Injectable({ providedIn: 'root' })
 export class VideosService {
-  private readonly scope = inject(ContentScopeService);
-  private readonly _videos = signal<Video[]>(readJson(STORAGE_KEY, MOCK_VIDEOS));
-  readonly videos = this._videos.asReadonly();
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = `${environment.apiUrl}/Videos`;
 
-  getAll(): Observable<Video[]> {
-    return of(this._videos()).pipe(delay(300));
+  getAll(query: VideosQuery = {}): Observable<PagedResult<Video>> {
+    let params = new HttpParams()
+      .set('pageNumber', query.pageNumber ?? 1)
+      .set('pageSize', query.pageSize ?? 100);
+    if (query.search) params = params.set('search', query.search);
+    if (query.stage) params = params.set('stage', query.stage);
+
+    return this.http.get<ApiResponse<PagedResult<Video>>>(this.baseUrl, { params }).pipe(map((res) => res.data));
   }
 
-  getForCurrentStudent(): Observable<Video[]> {
-    const published = this._videos().filter((v) => v.status === 'published');
-    return of(this.scope.scopeToCurrentStudent(published, (v) => v.stage)).pipe(delay(300));
+  getById(id: string): Observable<Video> {
+    return this.http.get<ApiResponse<Video>>(`${this.baseUrl}/${id}`).pipe(map((res) => res.data));
   }
 
-  getById(id: string): Video | undefined {
-    return this._videos().find((v) => v.id === id);
+  create(dto: VideoCreateDto): Observable<Video> {
+    return this.http.post<ApiResponse<Video>>(this.baseUrl, dto).pipe(map((res) => res.data));
   }
 
-  add(video: Video): void {
-    this._videos.update((list) => [video, ...list]);
-    this.persist();
+  update(id: string, dto: VideoUpdateDto): Observable<Video> {
+    return this.http.put<ApiResponse<Video>>(`${this.baseUrl}/${id}`, dto).pipe(map((res) => res.data));
   }
 
-  update(id: string, patch: Partial<Video>): void {
-    this._videos.update((list) => list.map((v) => (v.id === id ? { ...v, ...patch } : v)));
-    this.persist();
+  remove(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 
-  remove(id: string): void {
-    this._videos.update((list) => list.filter((v) => v.id !== id));
-    this.persist();
-  }
-
-  private persist(): void {
-    writeJson(STORAGE_KEY, this._videos());
+  uploadFile(file: File): Observable<string> {
+    const form = new FormData();
+    form.append('file', file);
+    return this.http
+      .post<ApiResponse<string>>(`${this.baseUrl}/upload`, form)
+      .pipe(map((res) => res.data));
   }
 }

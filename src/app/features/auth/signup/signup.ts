@@ -1,10 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { LucideEye, LucideEyeOff, LucideUserPlus } from '@lucide/angular';
 import { AuthService } from '../../../core/services/auth.service';
-import { ALL_STAGES, EducationalStage, STAGE_LABELS } from '../../../models';
-import { EGYPT_GOVERNORATES } from '../../../mock-data';
+import { ALL_STAGES, EducationalStage, Gender, STAGE_LABELS } from '../../../models';
+import { EGYPT_GOVERNORATES } from '../../../core/constants/governorates';
 import { egyptianPhoneValidator, passwordsMatchValidator } from '../../../shared/utils/validators';
 
 @Component({
@@ -29,12 +30,12 @@ export class Signup {
 
   readonly form = this.fb.group(
     {
-      studentName: ['', [Validators.required, Validators.minLength(3)]],
+      fullName: ['', [Validators.required, Validators.minLength(3)]],
       parentName: ['', [Validators.required, Validators.minLength(3)]],
       studentPhone: ['', [Validators.required, egyptianPhoneValidator()]],
       parentPhone: ['', [Validators.required, egyptianPhoneValidator()]],
-      stage: ['' as EducationalStage | '', Validators.required],
-      gender: ['' as 'male' | 'female' | '', Validators.required],
+      educationalStage: [null as EducationalStage | null, Validators.required],
+      gender: [null as Gender | null, Validators.required],
       governorate: ['', Validators.required],
       city: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -67,12 +68,12 @@ export class Signup {
     const value = this.form.getRawValue();
     this.auth
       .registerStudent({
-        studentName: value.studentName!,
+        fullName: value.fullName!,
         parentName: value.parentName!,
         studentPhone: value.studentPhone!,
         parentPhone: value.parentPhone!,
-        stage: value.stage as EducationalStage,
-        gender: value.gender as 'male' | 'female',
+        educationalStage: value.educationalStage!,
+        gender: value.gender!,
         governorate: value.governorate!,
         city: value.city!,
         email: value.email!,
@@ -83,9 +84,9 @@ export class Signup {
           this.isSubmitting.set(false);
           this.router.navigateByUrl('/student/dashboard');
         },
-        error: (err: Error) => {
+        error: (err: HttpErrorResponse) => {
           this.isSubmitting.set(false);
-          this.errorMessage.set(err.message || 'حدث خطأ أثناء إنشاء الحساب');
+          this.errorMessage.set(err.error?.message || 'حدث خطأ أثناء إنشاء الحساب');
         },
       });
   }

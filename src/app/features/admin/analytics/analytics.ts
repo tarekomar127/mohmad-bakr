@@ -1,7 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { LucideTrendingDown, LucideTrendingUp } from '@lucide/angular';
 import { ChartWrapper } from '../../../shared/components/chart-wrapper/chart-wrapper';
-import { AnalyticsService } from '../../../services/analytics.service';
+import { DashboardService } from '../../../services/dashboard.service';
+import { STAGE_LABELS, StageDistributionItem, StudentRankEntry } from '../../../models';
 
 @Component({
   selector: 'app-analytics',
@@ -10,14 +12,26 @@ import { AnalyticsService } from '../../../services/analytics.service';
   styleUrl: './analytics.scss',
 })
 export class Analytics {
-  readonly analytics = inject(AnalyticsService);
+  private readonly dashboardService = inject(DashboardService);
+  readonly stageLabels = STAGE_LABELS;
 
-  readonly videoCompletionSeries = [{ label: 'نسبة الإكمال %', data: this.analytics.videoCompletion.values }];
-  readonly averageScoresSeries = [{ label: 'متوسط الدرجات', data: this.analytics.averageScoresTrend.values }];
-  readonly watchTimeSeries = [{ label: 'دقائق المشاهدة', data: this.analytics.watchTime.values }];
-  readonly pdfDownloadsSeries = [{ label: 'عدد التحميلات', data: this.analytics.pdfDownloads.values }];
-  readonly examDistributionSeries = [{ label: 'عدد الطلاب', data: this.analytics.examResultDistribution.values }];
+  readonly stageDistribution = toSignal(this.dashboardService.getStageDistribution(), {
+    initialValue: [] as StageDistributionItem[],
+  });
+  readonly stageDistributionLabels = computed(() => this.stageDistribution().map((s) => this.stageLabels[s.stage]));
+  readonly stageDistributionSeries = computed(() => [
+    { label: 'عدد الطلاب', data: this.stageDistribution().map((s) => s.studentCount) },
+  ]);
 
-  readonly topStudents = this.analytics.topStudents;
-  readonly weakStudents = this.analytics.weakStudents;
+  readonly performance = toSignal(this.dashboardService.getStudentPerformance(), {
+    initialValue: { topStudents: [] as StudentRankEntry[], weakStudents: [] as StudentRankEntry[], scoreDistribution: [] },
+  });
+
+  readonly topStudents = computed(() => this.performance().topStudents);
+  readonly weakStudents = computed(() => this.performance().weakStudents);
+
+  readonly scoreDistributionLabels = computed(() => this.performance().scoreDistribution.map((b) => b.label));
+  readonly scoreDistributionSeries = computed(() => [
+    { label: 'عدد النتائج', data: this.performance().scoreDistribution.map((b) => b.count) },
+  ]);
 }

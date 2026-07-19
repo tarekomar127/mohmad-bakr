@@ -1,47 +1,59 @@
-import { Injectable, inject, signal } from '@angular/core';
-import { Observable, delay, of } from 'rxjs';
-import { Exam } from '../models';
-import { MOCK_EXAMS } from '../mock-data';
-import { readJson, writeJson } from '../shared/utils/local-store-sync';
-import { ContentScopeService } from '../core/services/content-scope.service';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { Observable, map } from 'rxjs';
+import { environment } from '../../environments/environment';
+import {
+  ApiResponse,
+  EducationalStage,
+  Exam,
+  ExamCreateDto,
+  ExamResult,
+  ExamSubmitDto,
+  ExamUpdateDto,
+  PagedResult,
+} from '../models';
 
-const STORAGE_KEY = 'mock_exams';
+export interface ExamsQuery {
+  search?: string;
+  stage?: EducationalStage;
+  pageNumber?: number;
+  pageSize?: number;
+}
 
 @Injectable({ providedIn: 'root' })
 export class ExamsService {
-  private readonly scope = inject(ContentScopeService);
-  private readonly _exams = signal<Exam[]>(readJson(STORAGE_KEY, MOCK_EXAMS));
-  readonly exams = this._exams.asReadonly();
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = `${environment.apiUrl}/Exams`;
 
-  getAll(): Observable<Exam[]> {
-    return of(this._exams()).pipe(delay(300));
+  getAll(query: ExamsQuery = {}): Observable<PagedResult<Exam>> {
+    let params = new HttpParams()
+      .set('pageNumber', query.pageNumber ?? 1)
+      .set('pageSize', query.pageSize ?? 100);
+    if (query.search) params = params.set('search', query.search);
+    if (query.stage) params = params.set('stage', query.stage);
+
+    return this.http.get<ApiResponse<PagedResult<Exam>>>(this.baseUrl, { params }).pipe(map((res) => res.data));
   }
 
-  getForCurrentStudent(): Observable<Exam[]> {
-    const published = this._exams().filter((e) => e.status === 'published');
-    return of(this.scope.scopeToCurrentStudent(published, (e) => e.stage)).pipe(delay(300));
+  getById(id: string): Observable<Exam> {
+    return this.http.get<ApiResponse<Exam>>(`${this.baseUrl}/${id}`).pipe(map((res) => res.data));
   }
 
-  getById(id: string): Exam | undefined {
-    return this._exams().find((e) => e.id === id);
+  create(dto: ExamCreateDto): Observable<Exam> {
+    return this.http.post<ApiResponse<Exam>>(this.baseUrl, dto).pipe(map((res) => res.data));
   }
 
-  add(exam: Exam): void {
-    this._exams.update((list) => [exam, ...list]);
-    this.persist();
+  update(id: string, dto: ExamUpdateDto): Observable<Exam> {
+    return this.http.put<ApiResponse<Exam>>(`${this.baseUrl}/${id}`, dto).pipe(map((res) => res.data));
   }
 
-  update(id: string, patch: Partial<Exam>): void {
-    this._exams.update((list) => list.map((e) => (e.id === id ? { ...e, ...patch } : e)));
-    this.persist();
+  remove(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 
-  remove(id: string): void {
-    this._exams.update((list) => list.filter((e) => e.id !== id));
-    this.persist();
-  }
-
-  private persist(): void {
-    writeJson(STORAGE_KEY, this._exams());
+  submit(id: string, dto: ExamSubmitDto): Observable<ExamResult> {
+    return this.http
+      .post<ApiResponse<ExamResult>>(`${this.baseUrl}/${id}/submit`, dto)
+      .pipe(map((res) => res.data));
   }
 }

@@ -3,8 +3,8 @@ import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 const HOME_BY_ROLE = {
-  admin: '/admin/dashboard',
-  student: '/student/dashboard',
+  Admin: '/admin/dashboard',
+  Student: '/student/dashboard',
 } as const;
 
 export const guestGuard: CanActivateFn = () => {

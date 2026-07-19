@@ -1,64 +1,40 @@
-<app-modal [title]="student.studentName" (closed)="close()">
-  <div class="space-y-5">
-    <div class="grid grid-cols-2 gap-4 text-sm sm:grid-cols-3">
-      <div>
-        <p class="text-xs text-ink-muted">اسم ولي الأمر</p>
-        <p class="mt-1 font-medium text-ink">{{ student.parentName }}</p>
-      </div>
-      <div>
-        <p class="text-xs text-ink-muted">رقم هاتف الطالب</p>
-        <p class="mt-1 font-medium text-ink" dir="ltr">{{ student.studentPhone }}</p>
-      </div>
-      <div>
-        <p class="text-xs text-ink-muted">رقم هاتف ولي الأمر</p>
-        <p class="mt-1 font-medium text-ink" dir="ltr">{{ student.parentPhone }}</p>
-      </div>
-      <div>
-        <p class="text-xs text-ink-muted">المرحلة التعليمية</p>
-        <p class="mt-1 font-medium text-ink">{{ student.stage | stageLabel }}</p>
-      </div>
-      <div>
-        <p class="text-xs text-ink-muted">النوع</p>
-        <p class="mt-1 font-medium text-ink">{{ student.gender === 'male' ? 'ذكر' : 'أنثى' }}</p>
-      </div>
-      <div>
-        <p class="text-xs text-ink-muted">المحافظة</p>
-        <p class="mt-1 font-medium text-ink">{{ student.governorate }}</p>
-      </div>
-      <div>
-        <p class="text-xs text-ink-muted">المدينة / السكن</p>
-        <p class="mt-1 font-medium text-ink">{{ student.city }}</p>
-      </div>
-      <div>
-        <p class="text-xs text-ink-muted">البريد الإلكتروني</p>
-        <p class="mt-1 font-medium text-ink" dir="ltr">{{ student.email }}</p>
-      </div>
-      <div>
-        <p class="text-xs text-ink-muted">الحالة</p>
-        <p class="mt-1 font-medium text-ink">
-          {{ student.status === 'active' ? 'نشط' : student.status === 'inactive' ? 'غير نشط' : 'موقوف' }}
-        </p>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
-      <div class="rounded-xl bg-page p-4 text-center">
-        <p class="text-xl font-bold text-primary">{{ student.completedLessons }}</p>
-        <p class="mt-1 text-xs text-ink-muted">درس مكتمل</p>
-      </div>
-      <div class="rounded-xl bg-page p-4 text-center">
-        <p class="text-xl font-bold text-primary">{{ student.averageScore }}%</p>
-        <p class="mt-1 text-xs text-ink-muted">متوسط الدرجات</p>
-      </div>
-      <div class="rounded-xl bg-page p-4 text-center">
-        <p class="text-xl font-bold text-primary">{{ student.progressPercent }}%</p>
-        <p class="mt-1 text-xs text-ink-muted">نسبة التقدم</p>
-      </div>
-    </div>
-
+<app-modal [title]="student.fullName" (closed)="close()">
+  <div class="grid grid-cols-2 gap-4 text-sm sm:grid-cols-3">
     <div>
-      <p class="mb-1.5 text-xs text-ink-muted">نسبة التقدم العامة</p>
-      <app-progress-bar [value]="student.progressPercent"></app-progress-bar>
+      <p class="text-xs text-ink-muted">اسم ولي الأمر</p>
+      <p class="mt-1 font-medium text-ink">{{ student.parentName }}</p>
+    </div>
+    <div>
+      <p class="text-xs text-ink-muted">رقم هاتف الطالب</p>
+      <p class="mt-1 font-medium text-ink" dir="ltr">{{ student.studentPhone }}</p>
+    </div>
+    <div>
+      <p class="text-xs text-ink-muted">رقم هاتف ولي الأمر</p>
+      <p class="mt-1 font-medium text-ink" dir="ltr">{{ student.parentPhone }}</p>
+    </div>
+    <div>
+      <p class="text-xs text-ink-muted">المرحلة التعليمية</p>
+      <p class="mt-1 font-medium text-ink">{{ student.educationalStage | stageLabel }}</p>
+    </div>
+    <div>
+      <p class="text-xs text-ink-muted">النوع</p>
+      <p class="mt-1 font-medium text-ink">{{ genderLabels[student.gender] }}</p>
+    </div>
+    <div>
+      <p class="text-xs text-ink-muted">المحافظة</p>
+      <p class="mt-1 font-medium text-ink">{{ student.governorate }}</p>
+    </div>
+    <div>
+      <p class="text-xs text-ink-muted">المدينة / السكن</p>
+      <p class="mt-1 font-medium text-ink">{{ student.city }}</p>
+    </div>
+    <div>
+      <p class="text-xs text-ink-muted">البريد الإلكتروني</p>
+      <p class="mt-1 font-medium text-ink" dir="ltr">{{ student.email }}</p>
+    </div>
+    <div>
+      <p class="text-xs text-ink-muted">تاريخ التسجيل</p>
+      <p class="mt-1 font-medium text-ink">{{ student.createdAt | date: 'mediumDate' }}</p>
     </div>
   </div>
 

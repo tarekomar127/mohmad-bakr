@@ -1,9 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
-import { LucideDownload, LucideFileText, LucidePencil, LucidePlus, LucideTrash2 } from '@lucide/angular';
+import { LucideFileText, LucidePencil, LucidePlus, LucideTrash2 } from '@lucide/angular';
 import { DataTable } from '../../../shared/components/data-table/data-table';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
-import { StageLabelPipe } from '../../../shared/pipes/stage-label.pipe';
 import { ConfirmDialogService } from '../../../shared/components/confirm-dialog/confirm-dialog.service';
 import { PdfsService } from '../../../services/pdfs.service';
 import { PdfFile } from '../../../models';
@@ -11,7 +11,7 @@ import { PdfFormDialog } from './pdf-form-dialog/pdf-form-dialog';
 
 @Component({
   selector: 'app-pdfs',
-  imports: [DataTable, EmptyState, StageLabelPipe, LucideDownload, LucideFileText, LucidePencil, LucidePlus, LucideTrash2],
+  imports: [DataTable, EmptyState, LucideFileText, LucidePencil, LucidePlus, LucideTrash2, DatePipe],
   templateUrl: './pdfs.html',
   styleUrl: './pdfs.scss',
 })
@@ -20,32 +20,42 @@ export class Pdfs {
   private readonly dialog = inject(MatDialog);
   private readonly confirmDialog = inject(ConfirmDialogService);
 
-  readonly pdfs = this.pdfsService.pdfs;
+  readonly pdfs = signal<PdfFile[]>([]);
+  readonly loading = signal(false);
+
+  constructor() {
+    this.reload();
+  }
+
+  reload(): void {
+    this.loading.set(true);
+    this.pdfsService.getAll().subscribe({
+      next: (res) => {
+        this.pdfs.set(res.items);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
+    });
+  }
 
   openAddDialog(): void {
     this.dialog
-      .open(PdfFormDialog, { data: null, width: '560px' })
+      .open(PdfFormDialog, { data: null, width: '640px' })
       .afterClosed()
       .subscribe((result) => {
         if (result) {
-          const pdf: PdfFile = {
-            id: `pdf-${Date.now()}`,
-            uploadDate: new Date().toISOString().slice(0, 10),
-            downloadCount: 0,
-            ...result,
-          };
-          this.pdfsService.add(pdf);
+          this.pdfsService.create(result).subscribe(() => this.reload());
         }
       });
   }
 
   openEditDialog(pdf: PdfFile): void {
     this.dialog
-      .open(PdfFormDialog, { data: pdf, width: '560px' })
+      .open(PdfFormDialog, { data: pdf, width: '640px' })
       .afterClosed()
       .subscribe((result) => {
         if (result) {
-          this.pdfsService.update(pdf.id, result);
+          this.pdfsService.update(pdf.id, result).subscribe(() => this.reload());
         }
       });
   }
@@ -55,7 +65,7 @@ export class Pdfs {
       .confirm({ title: 'حذف الملف', message: `هل تريد حذف الملف "${pdf.title}"؟`, confirmText: 'حذف', danger: true })
       .subscribe((confirmed) => {
         if (confirmed) {
-          this.pdfsService.remove(pdf.id);
+          this.pdfsService.remove(pdf.id).subscribe(() => this.reload());
         }
       });
   }

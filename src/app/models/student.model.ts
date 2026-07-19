@@ -1,23 +1,29 @@
-import { EducationalStage } from './educational-stage.model';
-
-export type StudentGender = 'male' | 'female';
-export type StudentStatus = 'active' | 'inactive' | 'suspended';
+import { EducationalStage, Gender } from './api.model';
 
 export interface Student {
   id: string;
-  studentName: string;
+  fullName: string;
   parentName: string;
   studentPhone: string;
   parentPhone: string;
   email: string;
-  stage: EducationalStage;
-  gender: StudentGender;
+  gender: Gender;
+  genderName: string;
   governorate: string;
   city: string;
-  status: StudentStatus;
-  progressPercent: number;
-  averageScore: number;
-  completedLessons: number;
+  educationalStage: EducationalStage;
+  educationalStageName: string;
   createdAt: string;
-  avatarUrl?: string;
+}
+
+export interface StudentUpdateDto {
+  fullName: string;
+  parentName: string;
+  studentPhone: string;
+  parentPhone: string;
+  email: string;
+  gender: Gender;
+  governorate: string;
+  city: string;
+  educationalStage: EducationalStage;
 }
