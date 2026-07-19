@@ -1,0 +1,77 @@
+// Include theming for Angular Material with `mat.theme()`.
+// Custom M3 palette generated from brand primary #D90429 (see src/styles/_m3-theme.scss).
+@use '@angular/material' as mat;
+@use './styles/m3-theme' as m3-theme;
+
+// Tailwind's own `@import "tailwindcss";` lives in styles/tailwind.css (a plain
+// CSS file, not .scss) and is registered as a separate global style entry in
+// angular.json — Dart Sass cannot resolve a bare `@import "tailwindcss";`
+// from within a .scss file, so the two stylesheets must stay split like this.
+
+html {
+  color-scheme: light;
+
+  @include mat.theme(
+    (
+      color: (
+        theme-type: light,
+        primary: m3-theme.$primary-palette,
+        tertiary: m3-theme.$tertiary-palette,
+      ),
+      typography: (
+        plain-family: 'Cairo, Tajawal, sans-serif',
+        brand-family: 'Cairo, Tajawal, sans-serif',
+      ),
+      density: 0,
+    )
+  );
+}
+
+// Dark theme: re-emits the M3 system CSS variables scoped under `.dark`,
+// toggled at runtime by ThemeService (see core/services/theme.service.ts).
+html.dark {
+  color-scheme: dark;
+
+  @include mat.theme(
+    (
+      color: (
+        theme-type: dark,
+        primary: m3-theme.$primary-palette,
+        tertiary: m3-theme.$tertiary-palette,
+      ),
+    )
+  );
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-page);
+  color: var(--color-ink);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-line);
+  border-radius: 999px;
+}

@@ -1,0 +1,115 @@
+<div class="mx-auto max-w-3xl space-y-8">
+  <div>
+    <h1 class="text-2xl font-extrabold text-ink">الإعدادات</h1>
+    <p class="mt-1 text-sm text-ink-muted">إدارة بيانات الملف الشخصي وكلمة المرور والمظهر.</p>
+  </div>
+
+  <div class="rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)]">
+    <h2 class="text-base font-bold text-ink">الملف الشخصي</h2>
+    <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="mt-5 space-y-4">
+      @if (profileSaved()) {
+        <div class="rounded-xl bg-accent px-4 py-3 text-sm font-medium text-primary">تم حفظ التعديلات بنجاح.</div>
+      }
+
+      <div class="flex items-center gap-4">
+        <img [src]="avatarPreview()" alt="" class="h-16 w-16 rounded-full border border-line object-cover" />
+        <label class="btn-outline cursor-pointer text-xs">
+          <svg lucideUpload [size]="14"></svg>
+          تغيير الصورة
+          <input type="file" accept="image/*" class="hidden" (change)="onAvatarSelected($event)" />
+        </label>
+      </div>
+
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">الاسم</label>
+        <input formControlName="name" type="text" class="field-control" />
+      </div>
+
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">النبذة التعريفية</label>
+        <textarea formControlName="bio" rows="4" class="field-control"></textarea>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">رابط يوتيوب</label>
+          <input formControlName="youtube" type="url" class="field-control" dir="ltr" />
+        </div>
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">رابط فيسبوك</label>
+          <input formControlName="facebook" type="url" class="field-control" dir="ltr" />
+        </div>
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">رابط انستجرام</label>
+          <input formControlName="instagram" type="url" class="field-control" dir="ltr" />
+        </div>
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">رابط تيك توك</label>
+          <input formControlName="tiktok" type="url" class="field-control" dir="ltr" />
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary">حفظ التعديلات</button>
+    </form>
+  </div>
+
+  <div class="rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)]">
+    <h2 class="text-base font-bold text-ink">كلمة المرور</h2>
+    <form [formGroup]="passwordForm" (ngSubmit)="savePassword()" class="mt-5 space-y-4">
+      @if (passwordSaved()) {
+        <div class="rounded-xl bg-accent px-4 py-3 text-sm font-medium text-primary">تم تغيير كلمة المرور بنجاح.</div>
+      }
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">كلمة المرور الحالية</label>
+        <input formControlName="currentPassword" type="password" class="field-control" />
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">كلمة المرور الجديدة</label>
+          <input formControlName="newPassword" type="password" class="field-control" />
+        </div>
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">تأكيد كلمة المرور الجديدة</label>
+          <input formControlName="confirmPassword" type="password" class="field-control" />
+        </div>
+      </div>
+      @if (passwordForm.errors?.['passwordsMismatch']) {
+        <p class="text-xs text-red-600">كلمتا المرور غير متطابقتين</p>
+      }
+      <button type="submit" class="btn-primary">تحديث كلمة المرور</button>
+    </form>
+  </div>
+
+  <div class="rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)]">
+    <h2 class="text-base font-bold text-ink">المظهر</h2>
+    <p class="mt-1 text-sm text-ink-muted">اختر بين الوضع الفاتح والوضع الداكن للمنصة.</p>
+    <div class="mt-4 flex gap-3">
+      <button
+        type="button"
+        (click)="theme.setMode('light')"
+        class="flex flex-1 flex-col items-center gap-2 rounded-xl border px-4 py-4 text-sm font-medium transition-colors"
+        [class.border-primary]="theme.mode() === 'light'"
+        [class.text-primary]="theme.mode() === 'light'"
+        [class.bg-accent]="theme.mode() === 'light'"
+        [class.border-line]="theme.mode() !== 'light'"
+        [class.text-ink-muted]="theme.mode() !== 'light'"
+      >
+        <svg lucideSun [size]="22"></svg>
+        فاتح
+      </button>
+      <button
+        type="button"
+        (click)="theme.setMode('dark')"
+        class="flex flex-1 flex-col items-center gap-2 rounded-xl border px-4 py-4 text-sm font-medium transition-colors"
+        [class.border-primary]="theme.mode() === 'dark'"
+        [class.text-primary]="theme.mode() === 'dark'"
+        [class.bg-accent]="theme.mode() === 'dark'"
+        [class.border-line]="theme.mode() !== 'dark'"
+        [class.text-ink-muted]="theme.mode() !== 'dark'"
+      >
+        <svg lucideMoon [size]="22"></svg>
+        داكن
+      </button>
+    </div>
+  </div>
+</div>

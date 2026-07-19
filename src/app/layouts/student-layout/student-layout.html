@@ -1,0 +1,128 @@
+<div class="flex min-h-screen bg-page">
+  <app-sidebar
+    #sidebar
+    brandTitle="الشافعي"
+    [brandSubtitle]="auth.currentUser()?.stage ? (auth.currentUser()!.stage! | stageLabel) : 'لوحة الطالب'"
+  >
+    <a
+      routerLink="/student/dashboard"
+      routerLinkActive="!bg-accent !text-primary"
+      [routerLinkActiveOptions]="{ exact: true }"
+      (click)="sidebar.close()"
+      class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-page hover:text-primary"
+    >
+      <svg lucideHouse [size]="18"></svg>
+      الرئيسية
+    </a>
+    <a
+      routerLink="/student/dashboard"
+      fragment="lessons"
+      (click)="sidebar.close()"
+      class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-page hover:text-primary"
+    >
+      <svg lucideBookOpen [size]="18"></svg>
+      الدروس
+    </a>
+    <a
+      routerLink="/student/videos"
+      routerLinkActive="!bg-accent !text-primary"
+      (click)="sidebar.close()"
+      class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-page hover:text-primary"
+    >
+      <svg lucideVideo [size]="18"></svg>
+      الفيديوهات
+    </a>
+    <a
+      routerLink="/student/pdfs"
+      routerLinkActive="!bg-accent !text-primary"
+      (click)="sidebar.close()"
+      class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-page hover:text-primary"
+    >
+      <svg lucideFileText [size]="18"></svg>
+      مكتبة PDF
+    </a>
+    <a
+      routerLink="/student/exams"
+      routerLinkActive="!bg-accent !text-primary"
+      (click)="sidebar.close()"
+      class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-page hover:text-primary"
+    >
+      <svg lucideClipboardList [size]="18"></svg>
+      الامتحانات
+    </a>
+    <a
+      routerLink="/student/results"
+      routerLinkActive="!bg-accent !text-primary"
+      (click)="sidebar.close()"
+      class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-page hover:text-primary"
+    >
+      <svg lucideClipboardCheck [size]="18"></svg>
+      النتائج
+    </a>
+    <a
+      routerLink="/student/notifications"
+      routerLinkActive="!bg-accent !text-primary"
+      (click)="sidebar.close()"
+      class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-page hover:text-primary"
+    >
+      <svg lucideBell [size]="18"></svg>
+      الإشعارات
+    </a>
+    <a
+      routerLink="/student/profile"
+      routerLinkActive="!bg-accent !text-primary"
+      (click)="sidebar.close()"
+      class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-page hover:text-primary"
+    >
+      <svg lucideCircleUser [size]="18"></svg>
+      الملف الشخصي
+    </a>
+
+    <button
+      footer
+      type="button"
+      (click)="logout()"
+      class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-accent"
+    >
+      <svg lucideLogOut [size]="18"></svg>
+      تسجيل الخروج
+    </button>
+  </app-sidebar>
+
+  <div class="flex min-w-0 flex-1 flex-col lg:ms-72">
+    <header class="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-line bg-surface px-4 sm:px-6">
+      <button
+        type="button"
+        (click)="sidebar.toggleMobile()"
+        class="flex h-10 w-10 items-center justify-center rounded-full text-ink lg:hidden"
+        aria-label="فتح القائمة"
+      >
+        <svg lucideMenu [size]="22"></svg>
+      </button>
+
+      <span class="hidden text-sm font-semibold text-ink lg:block">أهلاً، {{ auth.currentUser()?.name }}</span>
+
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          (click)="theme.toggle()"
+          class="flex h-10 w-10 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-page hover:text-primary"
+          aria-label="تبديل الوضع الليلي"
+        >
+          @if (theme.mode() === 'dark') {
+            <svg lucideSun [size]="18"></svg>
+          } @else {
+            <svg lucideMoon [size]="18"></svg>
+          }
+        </button>
+        <div class="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
+          {{ auth.currentUser()?.name?.charAt(0) }}
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 p-4 sm:p-6 lg:p-8">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

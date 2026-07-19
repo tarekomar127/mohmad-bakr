@@ -1,0 +1,45 @@
+<article
+  class="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-card-hover)]"
+>
+  <div
+    class="relative flex aspect-video items-center justify-center bg-gradient-to-br from-primary/90 to-primary/50 text-white"
+  >
+    <svg lucideCirclePlay [size]="42" [strokeWidth]="1.5"></svg>
+    <span
+      class="absolute bottom-2 start-2 rounded-full bg-black/50 px-2 py-0.5 text-xs font-medium text-white backdrop-blur-sm"
+    >
+      {{ video().durationMinutes }} د
+    </span>
+  </div>
+
+  <div class="flex flex-1 flex-col gap-3 p-4">
+    <div>
+      <p class="text-xs font-medium text-primary">{{ video().lessonName }}</p>
+      <h3 class="mt-1 line-clamp-2 text-sm font-semibold text-ink">{{ video().title }}</h3>
+    </div>
+
+    <div class="mt-auto flex items-center gap-3 text-xs text-ink-muted">
+      <span class="flex items-center gap-1">
+        <svg lucideUser [size]="14"></svg>
+        {{ video().teacherName }}
+      </span>
+      <span class="flex items-center gap-1">
+        <svg lucideClock [size]="14"></svg>
+        {{ video().durationMinutes }} دقيقة
+      </span>
+    </div>
+
+    @if (progressPercent() !== null) {
+      <app-progress-bar [value]="progressPercent()!"></app-progress-bar>
+    }
+
+    <button
+      type="button"
+      (click)="watch.emit()"
+      class="mt-1 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
+    >
+      <svg lucideCirclePlay [size]="16"></svg>
+      مشاهدة الفيديو
+    </button>
+  </div>
+</article>

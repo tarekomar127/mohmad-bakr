@@ -1,0 +1,32 @@
+<app-modal title="إعلان جديد" (closed)="close()">
+  <form [formGroup]="form" class="space-y-4">
+    <div>
+      <label class="mb-1.5 block text-sm font-medium text-ink">عنوان الإعلان</label>
+      <input formControlName="title" type="text" class="field-control" placeholder="مثال: امتحان غدًا" />
+    </div>
+
+    <div>
+      <label class="mb-1.5 block text-sm font-medium text-ink">محتوى الإعلان</label>
+      <textarea formControlName="content" rows="4" class="field-control" placeholder="اكتب تفاصيل الإعلان هنا"></textarea>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">المرحلة المستهدفة</label>
+        <select formControlName="targetStage" class="field-control">
+          <option value="all">جميع الطلاب</option>
+          @for (stage of stages; track stage) {
+            <option [value]="stage">{{ stageLabels[stage] }}</option>
+          }
+        </select>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">تاريخ النشر</label>
+        <input formControlName="publishDate" type="date" class="field-control" />
+      </div>
+    </div>
+  </form>
+
+  <button footer type="button" (click)="close()" class="btn-outline">إلغاء</button>
+  <button footer type="button" (click)="save()" class="btn-primary">نشر الإعلان</button>
+</app-modal>

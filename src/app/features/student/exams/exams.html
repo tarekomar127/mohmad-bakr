@@ -1,0 +1,22 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-extrabold text-ink">الامتحانات</h1>
+    <p class="mt-1 text-sm text-ink-muted">امتحانات إلكترونية متاحة لمرحلتك الدراسية.</p>
+  </div>
+
+  @if (showComingSoon()) {
+    <div class="rounded-xl bg-accent px-4 py-3 text-sm font-medium text-primary">
+      نظام تقديم الامتحانات التفصيلي قادم قريبًا. سيتم إعلامك فور توفره.
+    </div>
+  }
+
+  @if (exams().length === 0) {
+    <app-empty-state title="لا توجد امتحانات متاحة حاليًا" description="تابع الإعلانات لمعرفة موعد الامتحان القادم."></app-empty-state>
+  } @else {
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      @for (exam of exams(); track exam.id) {
+        <app-exam-card [exam]="exam" (start)="start()"></app-exam-card>
+      }
+    </div>
+  }
+</div>

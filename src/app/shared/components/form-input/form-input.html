@@ -1,0 +1,18 @@
+<label class="block">
+  @if (label()) {
+    <span class="mb-1.5 flex items-center gap-1 text-sm font-medium text-ink">
+      {{ label() }}
+      @if (required()) {
+        <span class="text-primary">*</span>
+      }
+    </span>
+  }
+
+  <ng-content></ng-content>
+
+  @if (error()) {
+    <span class="mt-1 block text-xs font-medium text-red-600 dark:text-red-400">{{ error() }}</span>
+  } @else if (hint()) {
+    <span class="mt-1 block text-xs text-ink-muted">{{ hint() }}</span>
+  }
+</label>

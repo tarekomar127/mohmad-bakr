@@ -1,0 +1,153 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Cairo', 'Tajawal', ui-sans-serif, system-ui, sans-serif;
+
+  --color-primary: #D90429;
+  --color-primary-light: #ff5355;
+  --color-secondary: #FFFFFF;
+  --color-page: #F8F9FA;
+  --color-surface: #FFFFFF;
+  --color-ink: #222222;
+  --color-ink-muted: #6b6b6b;
+  --color-line: #E5E5E5;
+  --color-accent: #FFE5EA;
+
+  --shadow-card: 0 2px 10px rgba(34, 34, 34, 0.06);
+  --shadow-card-hover: 0 12px 28px rgba(217, 4, 41, 0.14);
+}
+
+/* Dark mode token overrides — class-based, toggled via ThemeService on <html>. */
+.dark {
+  --color-primary: #ff5355;
+  --color-primary-light: #ff8984;
+  --color-secondary: #1c1e22;
+  --color-page: #121316;
+  --color-surface: #1c1e22;
+  --color-ink: #f3f4f5;
+  --color-ink-muted: #a3a5ab;
+  --color-line: #2d2f34;
+  --color-accent: #3a141c;
+
+  --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.35);
+  --shadow-card-hover: 0 12px 28px rgba(255, 83, 85, 0.18);
+}
+
+@layer components {
+  .field-control {
+    @apply w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-muted transition-colors outline-none;
+    @apply focus:border-primary focus:ring-2 focus:ring-primary/20;
+  }
+
+  select.field-control {
+    @apply appearance-none bg-no-repeat;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236b6b6b'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-position: left 0.75rem center;
+    background-size: 1.1em;
+    padding-left: 2.25rem;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-[var(--shadow-card-hover)] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-line px-5 py-2.5 text-sm font-semibold text-ink transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:text-primary active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  /* Decorative Islamic 8-point star lattice — evokes Arabic geometric art without a photo. */
+  .hero-pattern {
+    position: relative;
+  }
+
+  .hero-pattern::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='84' viewBox='0 0 84 84'%3E%3Cg fill='none' stroke='%23D90429' stroke-opacity='0.14' stroke-width='1'%3E%3Crect x='22' y='22' width='40' height='40'/%3E%3Crect x='22' y='22' width='40' height='40' transform='rotate(45 42 42)'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 84px 84px;
+    pointer-events: none;
+  }
+
+  /* Large faint Arabic word behind the hero heading, purely typographic — no external image. */
+  .hero-watermark {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(6rem, 22vw, 16rem);
+    font-weight: 800;
+    color: var(--color-primary);
+    opacity: 0.06;
+    white-space: nowrap;
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+  }
+}
+
+@layer utilities {
+  .animate-fade-up {
+    animation: fade-up 0.6s ease-out both;
+  }
+
+  .stagger-1 {
+    animation-delay: 0.08s;
+  }
+
+  .stagger-2 {
+    animation-delay: 0.16s;
+  }
+
+  .stagger-3 {
+    animation-delay: 0.24s;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse-slow 4s ease-in-out infinite;
+  }
+
+  .animate-float {
+    animation: float 5s ease-in-out infinite;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-slow {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.25s;
+}

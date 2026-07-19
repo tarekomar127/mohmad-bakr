@@ -1,0 +1,85 @@
+<div class="space-y-6">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h1 class="text-2xl font-extrabold text-ink">الفيديوهات</h1>
+      <p class="mt-1 text-sm text-ink-muted">إدارة فيديوهات الشرح لكل مرحلة تعليمية.</p>
+    </div>
+    <button type="button" (click)="openAddDialog()" class="btn-primary">
+      <svg lucidePlus [size]="16"></svg>
+      إضافة فيديو
+    </button>
+  </div>
+
+  @if (videos().length === 0) {
+    <app-empty-state title="لا توجد فيديوهات بعد" description="ابدأ برفع أول فيديو شرح لطلابك.">
+    </app-empty-state>
+  } @else {
+    <app-data-table>
+      <table>
+        <thead>
+          <tr>
+            <th>الصورة المصغرة</th>
+            <th>العنوان</th>
+            <th>المرحلة</th>
+            <th>المدة</th>
+            <th>الحالة</th>
+            <th>إجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (video of videos(); track video.id) {
+            <tr>
+              <td>
+                <div class="flex h-12 w-20 items-center justify-center overflow-hidden rounded-lg bg-accent text-primary">
+                  @if (video.thumbnailUrl) {
+                    <img [src]="video.thumbnailUrl" alt="" class="h-full w-full object-cover" />
+                  } @else {
+                    <svg lucideVideo [size]="20"></svg>
+                  }
+                </div>
+              </td>
+              <td>
+                <p class="font-medium text-ink">{{ video.title }}</p>
+                <p class="text-xs text-ink-muted">{{ video.lessonName }}</p>
+              </td>
+              <td>{{ video.stage | stageLabel }}</td>
+              <td>{{ video.durationMinutes }} د</td>
+              <td>
+                <span
+                  class="rounded-full px-2.5 py-1 text-xs font-medium"
+                  [class]="
+                    video.status === 'published'
+                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'
+                      : 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400'
+                  "
+                >
+                  {{ video.status === 'published' ? 'منشور' : 'مسودة' }}
+                </span>
+              </td>
+              <td>
+                <div class="flex items-center gap-1">
+                  <button
+                    type="button"
+                    (click)="openEditDialog(video)"
+                    class="flex h-8 w-8 items-center justify-center rounded-lg text-ink-muted transition-colors hover:bg-accent hover:text-primary"
+                    aria-label="تعديل"
+                  >
+                    <svg lucidePencil [size]="16"></svg>
+                  </button>
+                  <button
+                    type="button"
+                    (click)="deleteVideo(video)"
+                    class="flex h-8 w-8 items-center justify-center rounded-lg text-ink-muted transition-colors hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-500/10"
+                    aria-label="حذف"
+                  >
+                    <svg lucideTrash2 [size]="16"></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </app-data-table>
+  }
+</div>

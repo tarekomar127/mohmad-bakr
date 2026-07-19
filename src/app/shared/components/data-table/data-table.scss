@@ -1,0 +1,37 @@
+:host {
+  display: block;
+
+  ::ng-deep table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    text-align: start;
+  }
+
+  ::ng-deep thead {
+    background: var(--color-page);
+  }
+
+  ::ng-deep th {
+    padding: 0.85rem 1rem;
+    font-weight: 600;
+    color: var(--color-ink-muted);
+    white-space: nowrap;
+    text-align: start;
+  }
+
+  ::ng-deep td {
+    padding: 0.85rem 1rem;
+    border-top: 1px solid var(--color-line);
+    color: var(--color-ink);
+    vertical-align: middle;
+  }
+
+  ::ng-deep tbody tr {
+    transition: background-color 0.15s ease;
+  }
+
+  ::ng-deep tbody tr:hover {
+    background: var(--color-page);
+  }
+}

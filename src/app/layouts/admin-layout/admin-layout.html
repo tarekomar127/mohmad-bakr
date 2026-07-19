@@ -1,0 +1,142 @@
+<div class="flex min-h-screen bg-page">
+  <app-sidebar #sidebar brandTitle="الشافعي" brandSubtitle="لوحة تحكم المعلم">
+    <a
+      routerLink="/admin/dashboard"
+      routerLinkActive="!bg-accent !text-primary"
+      [routerLinkActiveOptions]="{ exact: true }"
+      (click)="sidebar.close()"
+      class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-page hover:text-primary"
+    >
+      <svg lucideLayoutDashboard [size]="18"></svg>
+      لوحة التحكم
+    </a>
+    <a
+      routerLink="/admin/students"
+      routerLinkActive="!bg-accent !text-primary"
+      (click)="sidebar.close()"
+      class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-page hover:text-primary"
+    >
+      <svg lucideUsers [size]="18"></svg>
+      الطلاب
+    </a>
+    <a
+      routerLink="/admin/dashboard"
+      fragment="stages"
+      (click)="sidebar.close()"
+      class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-page hover:text-primary"
+    >
+      <svg lucideLayers [size]="18"></svg>
+      المراحل التعليمية
+    </a>
+    <a
+      routerLink="/admin/videos"
+      routerLinkActive="!bg-accent !text-primary"
+      (click)="sidebar.close()"
+      class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-page hover:text-primary"
+    >
+      <svg lucideVideo [size]="18"></svg>
+      الفيديوهات
+    </a>
+    <a
+      routerLink="/admin/pdfs"
+      routerLinkActive="!bg-accent !text-primary"
+      (click)="sidebar.close()"
+      class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-page hover:text-primary"
+    >
+      <svg lucideFileText [size]="18"></svg>
+      ملفات PDF
+    </a>
+    <a
+      routerLink="/admin/exams"
+      routerLinkActive="!bg-accent !text-primary"
+      (click)="sidebar.close()"
+      class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-page hover:text-primary"
+    >
+      <svg lucideClipboardList [size]="18"></svg>
+      الامتحانات
+    </a>
+    <a
+      routerLink="/admin/announcements"
+      routerLinkActive="!bg-accent !text-primary"
+      (click)="sidebar.close()"
+      class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-page hover:text-primary"
+    >
+      <svg lucideMegaphone [size]="18"></svg>
+      الإعلانات
+    </a>
+    <a
+      routerLink="/admin/notifications"
+      routerLinkActive="!bg-accent !text-primary"
+      (click)="sidebar.close()"
+      class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-page hover:text-primary"
+    >
+      <svg lucideBell [size]="18"></svg>
+      الإشعارات
+    </a>
+    <a
+      routerLink="/admin/analytics"
+      routerLinkActive="!bg-accent !text-primary"
+      (click)="sidebar.close()"
+      class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-page hover:text-primary"
+    >
+      <svg lucideChartColumn [size]="18"></svg>
+      الإحصائيات
+    </a>
+    <a
+      routerLink="/admin/settings"
+      routerLinkActive="!bg-accent !text-primary"
+      (click)="sidebar.close()"
+      class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-page hover:text-primary"
+    >
+      <svg lucideSettings [size]="18"></svg>
+      الإعدادات
+    </a>
+
+    <button
+      footer
+      type="button"
+      (click)="logout()"
+      class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-accent"
+    >
+      <svg lucideLogOut [size]="18"></svg>
+      تسجيل الخروج
+    </button>
+  </app-sidebar>
+
+  <div class="flex min-w-0 flex-1 flex-col lg:ms-72">
+    <header class="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-line bg-surface px-4 sm:px-6">
+      <button
+        type="button"
+        (click)="sidebar.toggleMobile()"
+        class="flex h-10 w-10 items-center justify-center rounded-full text-ink lg:hidden"
+        aria-label="فتح القائمة"
+      >
+        <svg lucideMenu [size]="22"></svg>
+      </button>
+
+      <span class="hidden text-sm font-semibold text-ink lg:block">أهلاً، {{ auth.currentUser()?.name }}</span>
+
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          (click)="theme.toggle()"
+          class="flex h-10 w-10 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-page hover:text-primary"
+          aria-label="تبديل الوضع الليلي"
+        >
+          @if (theme.mode() === 'dark') {
+            <svg lucideSun [size]="18"></svg>
+          } @else {
+            <svg lucideMoon [size]="18"></svg>
+          }
+        </button>
+        <div class="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
+          {{ auth.currentUser()?.name?.charAt(0) }}
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 p-4 sm:p-6 lg:p-8">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

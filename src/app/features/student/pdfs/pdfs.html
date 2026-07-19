@@ -1,0 +1,29 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-extrabold text-ink">مكتبة PDF</h1>
+    <p class="mt-1 text-sm text-ink-muted">جميع الملازم والملفات الخاصة بمرحلتك الدراسية.</p>
+  </div>
+
+  @if (pdfs().length === 0) {
+    <app-empty-state title="لا توجد ملفات متاحة حاليًا" description="سيتم إضافة ملفات جديدة قريبًا."></app-empty-state>
+  } @else {
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      @for (pdf of pdfs(); track pdf.id) {
+        <app-pdf-card [pdf]="pdf" (view)="view(pdf)" (download)="download(pdf)"></app-pdf-card>
+      }
+    </div>
+  }
+</div>
+
+@if (viewingPdf(); as pdf) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" (click)="closeView()">
+    <div class="w-full max-w-lg rounded-2xl bg-surface shadow-[var(--shadow-card-hover)]" (click)="$event.stopPropagation()">
+      <app-modal [title]="pdf.title" (closed)="closeView()">
+        <p class="text-sm leading-7 text-ink-muted">{{ pdf.description }}</p>
+        <p class="mt-3 text-xs text-ink-muted">تاريخ الرفع: {{ pdf.uploadDate }}</p>
+        <button footer type="button" (click)="closeView()" class="btn-outline">إغلاق</button>
+        <button footer type="button" (click)="download(pdf); closeView()" class="btn-primary">تحميل الملف</button>
+      </app-modal>
+    </div>
+  </div>
+}

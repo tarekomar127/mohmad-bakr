@@ -1,0 +1,60 @@
+import { AppNotification, EducationalStage } from '../models';
+
+export const MOCK_NOTIFICATIONS: AppNotification[] = [
+  {
+    id: 'notif-01',
+    title: 'امتحان غدًا',
+    message: 'لديك امتحان النحو غدًا الساعة 5 مساءً، لا تنسَ المراجعة.',
+    targetStage: EducationalStage.PrepFirst,
+    kind: 'exam',
+    sentAt: '2026-06-14T18:00:00',
+  },
+  {
+    id: 'notif-02',
+    title: 'تم رفع شرح جديد',
+    message: 'تم رفع فيديو شرح جديد لدرس نائب الفاعل.',
+    targetStage: EducationalStage.PrepSecond,
+    kind: 'video',
+    sentAt: '2026-06-02T10:00:00',
+  },
+  {
+    id: 'notif-03',
+    title: 'تم رفع ملف PDF جديد',
+    message: 'تمت إضافة ملزمة الممنوع من الصرف إلى مكتبة PDF.',
+    targetStage: EducationalStage.PrepThird,
+    kind: 'pdf',
+    sentAt: '2026-06-05T09:30:00',
+  },
+  {
+    id: 'notif-04',
+    title: 'إجازة',
+    message: 'نتمنى لكم إجازة سعيدة، تابعوا الفيديوهات المتاحة أثناء الإجازة.',
+    targetStage: 'all',
+    kind: 'holiday',
+    sentAt: '2026-06-01T08:00:00',
+  },
+  {
+    id: 'notif-05',
+    title: 'امتحان الحال والتمييز غدًا',
+    message: 'استعد لامتحان الحال والتمييز غدًا، الامتحان متاح الآن على المنصة.',
+    targetStage: EducationalStage.SecondaryFirst,
+    kind: 'exam',
+    sentAt: '2026-06-19T17:00:00',
+  },
+  {
+    id: 'notif-06',
+    title: 'بدء المراجعة النهائية',
+    message: 'حصص المراجعة النهائية تبدأ الأسبوع القادم، لا تفوتها.',
+    targetStage: EducationalStage.SecondarySecond,
+    kind: 'general',
+    sentAt: '2026-06-20T12:00:00',
+  },
+  {
+    id: 'notif-07',
+    title: 'تحديث المنصة',
+    message: 'تم تحسين لوحة تحكم الطالب لمتابعة أفضل للتقدم الدراسي.',
+    targetStage: 'all',
+    kind: 'general',
+    sentAt: '2026-06-22T09:00:00',
+  },
+];

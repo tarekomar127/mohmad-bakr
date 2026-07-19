@@ -1,0 +1,12 @@
+<div class="w-full">
+  <div class="h-2 w-full overflow-hidden rounded-full bg-line/60 dark:bg-line/40">
+    <div
+      class="h-full rounded-full transition-all duration-500 ease-out"
+      [class]="toneClass()"
+      [style.width.%]="clamped()"
+    ></div>
+  </div>
+  @if (showPercentLabel()) {
+    <span class="mt-1 inline-block text-xs font-medium text-ink-muted">{{ clamped() }}%</span>
+  }
+</div>

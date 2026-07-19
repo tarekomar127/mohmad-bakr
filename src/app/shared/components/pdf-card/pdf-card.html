@@ -1,0 +1,32 @@
+<article
+  class="flex h-full flex-col gap-4 rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-card-hover)]"
+>
+  <div class="flex items-start gap-3">
+    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent text-primary">
+      <svg lucideFileText [size]="22"></svg>
+    </div>
+    <div class="min-w-0">
+      <h3 class="line-clamp-2 text-sm font-semibold text-ink">{{ pdf().title }}</h3>
+      <p class="mt-1 line-clamp-2 text-xs text-ink-muted">{{ pdf().description }}</p>
+    </div>
+  </div>
+
+  <div class="mt-auto flex gap-2">
+    <button
+      type="button"
+      (click)="view.emit()"
+      class="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-line px-3 py-2 text-xs font-semibold text-ink transition-colors hover:border-primary hover:text-primary"
+    >
+      <svg lucideEye [size]="15"></svg>
+      عرض
+    </button>
+    <button
+      type="button"
+      (click)="download.emit()"
+      class="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-primary/90"
+    >
+      <svg lucideDownload [size]="15"></svg>
+      تحميل
+    </button>
+  </div>
+</article>

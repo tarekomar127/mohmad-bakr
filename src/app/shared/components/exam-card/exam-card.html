@@ -1,0 +1,33 @@
+<article
+  class="flex h-full flex-col gap-4 rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-card-hover)]"
+>
+  <div class="flex items-start gap-3">
+    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent text-primary">
+      <svg lucideClipboardList [size]="22"></svg>
+    </div>
+    <h3 class="text-sm font-semibold text-ink">{{ exam().title }}</h3>
+  </div>
+
+  <div class="grid grid-cols-3 gap-2 rounded-xl bg-page py-3 text-center text-xs text-ink-muted">
+    <div class="flex flex-col items-center gap-1">
+      <svg lucideClock [size]="16" class="text-primary"></svg>
+      {{ exam().durationMinutes }} د
+    </div>
+    <div class="flex flex-col items-center gap-1 border-x border-line">
+      <svg lucideListChecks [size]="16" class="text-primary"></svg>
+      {{ exam().questionCount }} سؤال
+    </div>
+    <div class="flex flex-col items-center gap-1">
+      <span class="font-bold text-primary">{{ exam().totalMarks }}</span>
+      الدرجة الكلية
+    </div>
+  </div>
+
+  <button
+    type="button"
+    (click)="start.emit()"
+    class="mt-auto inline-flex w-full items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
+  >
+    بدء الامتحان
+  </button>
+</article>

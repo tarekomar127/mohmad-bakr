@@ -1,0 +1,92 @@
+<div class="space-y-8">
+  <div>
+    <h1 class="text-2xl font-extrabold text-ink">لوحة التحكم</h1>
+    <p class="mt-1 text-sm text-ink-muted">نظرة عامة على أداء المنصة والطلاب.</p>
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+    <app-stat-card label="إجمالي الطلاب" [value]="analytics.dashboardStats().totalStudents">
+      <svg lucideUsers></svg>
+    </app-stat-card>
+    <app-stat-card label="عدد الفيديوهات" [value]="analytics.dashboardStats().totalVideos">
+      <svg lucideVideo></svg>
+    </app-stat-card>
+    <app-stat-card label="عدد ملفات PDF" [value]="analytics.dashboardStats().totalPdfs">
+      <svg lucideFileText></svg>
+    </app-stat-card>
+    <app-stat-card label="عدد الامتحانات" [value]="analytics.dashboardStats().totalExams">
+      <svg lucideClipboardList></svg>
+    </app-stat-card>
+    <app-stat-card label="عدد الإعلانات" [value]="analytics.dashboardStats().totalAnnouncements">
+      <svg lucideMegaphone></svg>
+    </app-stat-card>
+    <app-stat-card label="نسبة النشاط" [value]="analytics.dashboardStats().activityRate + '%'">
+      <svg lucideActivity></svg>
+    </app-stat-card>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <div class="rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
+      <h2 class="mb-4 text-sm font-bold text-ink">نشاط الطلاب الشهري</h2>
+      <app-chart-wrapper
+        type="line"
+        [labels]="analytics.studentActivity.labels"
+        [datasets]="studentActivitySeries"
+      ></app-chart-wrapper>
+    </div>
+
+    <div class="rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
+      <h2 class="mb-4 text-sm font-bold text-ink">متوسط الدرجات الشهري</h2>
+      <app-chart-wrapper
+        type="line"
+        [labels]="analytics.averageScoresTrend.labels"
+        [datasets]="averageScoresSeries"
+      ></app-chart-wrapper>
+    </div>
+
+    <div class="rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
+      <h2 class="mb-4 text-sm font-bold text-ink">نسبة إكمال الفيديوهات حسب الموضوع</h2>
+      <app-chart-wrapper
+        type="bar"
+        [labels]="analytics.videoCompletion.labels"
+        [datasets]="videoCompletionSeries"
+      ></app-chart-wrapper>
+    </div>
+
+    <div class="rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
+      <h2 class="mb-4 text-sm font-bold text-ink">الطلاب الأكثر نشاطًا</h2>
+      <app-chart-wrapper type="bar" [labels]="topStudentsLabels()" [datasets]="topStudentsSeries()"></app-chart-wrapper>
+    </div>
+  </div>
+
+  <div id="stages" class="scroll-mt-24 rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
+    <div class="mb-4 flex items-center gap-2">
+      <svg lucideLayers [size]="18" class="text-primary"></svg>
+      <h2 class="text-sm font-bold text-ink">توزيع الطلاب والمحتوى حسب المرحلة التعليمية</h2>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-line text-ink-muted">
+            <th class="py-2 text-start font-semibold">المرحلة</th>
+            <th class="py-2 text-start font-semibold">الطلاب</th>
+            <th class="py-2 text-start font-semibold">الفيديوهات</th>
+            <th class="py-2 text-start font-semibold">ملفات PDF</th>
+            <th class="py-2 text-start font-semibold">الامتحانات</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of analytics.stageDistribution(); track row.stage) {
+            <tr class="border-b border-line last:border-0">
+              <td class="py-2.5 font-medium text-ink">{{ stageLabels[row.stage] }}</td>
+              <td class="py-2.5 text-ink-muted">{{ row.studentCount }}</td>
+              <td class="py-2.5 text-ink-muted">{{ row.videoCount }}</td>
+              <td class="py-2.5 text-ink-muted">{{ row.pdfCount }}</td>
+              <td class="py-2.5 text-ink-muted">{{ row.examCount }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

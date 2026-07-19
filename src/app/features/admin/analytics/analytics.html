@@ -1,0 +1,82 @@
+<div class="space-y-8">
+  <div>
+    <h1 class="text-2xl font-extrabold text-ink">الإحصائيات</h1>
+    <p class="mt-1 text-sm text-ink-muted">تحليل شامل لأداء الطلاب والمحتوى على المنصة.</p>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <div class="rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
+      <h2 class="mb-4 text-sm font-bold text-ink">نسبة إكمال الفيديوهات</h2>
+      <app-chart-wrapper type="bar" [labels]="analytics.videoCompletion.labels" [datasets]="videoCompletionSeries"></app-chart-wrapper>
+    </div>
+
+    <div class="rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
+      <h2 class="mb-4 text-sm font-bold text-ink">متوسط الدرجات الشهري</h2>
+      <app-chart-wrapper type="line" [labels]="analytics.averageScoresTrend.labels" [datasets]="averageScoresSeries"></app-chart-wrapper>
+    </div>
+
+    <div class="rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
+      <h2 class="mb-4 text-sm font-bold text-ink">إجمالي وقت المشاهدة (دقيقة)</h2>
+      <app-chart-wrapper type="line" [labels]="analytics.watchTime.labels" [datasets]="watchTimeSeries"></app-chart-wrapper>
+    </div>
+
+    <div class="rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
+      <h2 class="mb-4 text-sm font-bold text-ink">تحميلات ملفات PDF</h2>
+      <app-chart-wrapper type="bar" [labels]="analytics.pdfDownloads.labels" [datasets]="pdfDownloadsSeries"></app-chart-wrapper>
+    </div>
+
+    <div class="rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)] lg:col-span-2">
+      <h2 class="mb-4 text-sm font-bold text-ink">توزيع نتائج الامتحانات</h2>
+      <div class="mx-auto max-w-sm">
+        <app-chart-wrapper
+          type="doughnut"
+          [labels]="analytics.examResultDistribution.labels"
+          [datasets]="examDistributionSeries"
+          [height]="280"
+        ></app-chart-wrapper>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <div class="rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
+      <div class="mb-4 flex items-center gap-2">
+        <svg lucideTrendingUp [size]="18" class="text-emerald-600 dark:text-emerald-400"></svg>
+        <h2 class="text-sm font-bold text-ink">الطلاب الأكثر تفوقًا</h2>
+      </div>
+      <ul class="space-y-2">
+        @for (s of topStudents(); track s.studentId; let i = $index) {
+          <li class="flex items-center justify-between rounded-xl bg-page px-4 py-2.5 text-sm">
+            <span class="flex items-center gap-2 font-medium text-ink">
+              <span class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-xs font-bold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
+                {{ i + 1 }}
+              </span>
+              {{ s.studentName }}
+            </span>
+            <span class="font-semibold text-primary">{{ s.averageScore }}%</span>
+          </li>
+        }
+      </ul>
+    </div>
+
+    <div class="rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
+      <div class="mb-4 flex items-center gap-2">
+        <svg lucideTrendingDown [size]="18" class="text-red-600 dark:text-red-400"></svg>
+        <h2 class="text-sm font-bold text-ink">طلاب بحاجة لمتابعة إضافية</h2>
+      </div>
+      <ul class="space-y-2">
+        @for (s of weakStudents(); track s.studentId; let i = $index) {
+          <li class="flex items-center justify-between rounded-xl bg-page px-4 py-2.5 text-sm">
+            <span class="flex items-center gap-2 font-medium text-ink">
+              <span class="flex h-6 w-6 items-center justify-center rounded-full bg-red-100 text-xs font-bold text-red-700 dark:bg-red-500/10 dark:text-red-400">
+                {{ i + 1 }}
+              </span>
+              {{ s.studentName }}
+            </span>
+            <span class="font-semibold text-red-600 dark:text-red-400">{{ s.averageScore }}%</span>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</div>

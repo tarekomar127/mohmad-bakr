@@ -1,0 +1,15 @@
+<div class="flex items-start gap-3 rounded-2xl border border-line bg-surface p-4 shadow-[var(--shadow-card)]">
+  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-primary">
+    <svg lucideMegaphone [size]="18"></svg>
+  </div>
+  <div class="min-w-0 flex-1">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <h4 class="text-sm font-semibold text-ink">{{ announcement().title }}</h4>
+      <span class="whitespace-nowrap text-xs text-ink-muted">{{ announcement().publishDate }}</span>
+    </div>
+    <p class="mt-1 text-sm text-ink-muted">{{ announcement().content }}</p>
+    <span class="mt-2 inline-block rounded-full bg-accent px-2.5 py-0.5 text-xs font-medium text-primary">
+      {{ announcement().targetStage | stageLabel }}
+    </span>
+  </div>
+</div>

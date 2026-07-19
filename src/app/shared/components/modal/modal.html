@@ -1,0 +1,21 @@
+<div class="flex max-h-[85vh] w-full flex-col">
+  <header class="flex items-center justify-between border-b border-line px-6 py-4">
+    <h2 class="text-base font-bold text-ink">{{ title() }}</h2>
+    <button
+      type="button"
+      (click)="closed.emit()"
+      class="flex h-8 w-8 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-page hover:text-ink"
+      aria-label="إغلاق"
+    >
+      <svg lucideX [size]="18"></svg>
+    </button>
+  </header>
+
+  <div class="flex-1 overflow-y-auto px-6 py-5">
+    <ng-content></ng-content>
+  </div>
+
+  <footer class="flex justify-end gap-2 border-t border-line px-6 py-4">
+    <ng-content select="[footer]"></ng-content>
+  </footer>
+</div>

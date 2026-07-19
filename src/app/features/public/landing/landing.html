@@ -1,0 +1,226 @@
+<!-- Hero -->
+<section class="hero-pattern relative overflow-hidden bg-gradient-to-b from-accent/60 to-page py-20 sm:py-28 lg:py-36 dark:from-accent/10">
+  <span class="hero-watermark" aria-hidden="true">العربية</span>
+
+  <div class="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+    <span class="animate-fade-up inline-block rounded-full bg-accent px-4 py-1.5 text-xs font-semibold text-primary">
+      منصة الشافعي التعليمية
+    </span>
+    <h1 class="animate-fade-up stagger-1 mt-5 text-3xl font-extrabold leading-tight text-ink sm:text-4xl lg:text-5xl">
+      تعلّم اللغة العربية بأسلوب مبسّط
+      <span class="text-primary">مع الأستاذ محمد بكر</span>
+    </h1>
+    <p class="animate-fade-up stagger-2 mx-auto mt-5 max-w-xl text-base leading-8 text-ink-muted">
+      فيديوهات شرح، ملازم PDF، امتحانات إلكترونية، ومتابعة مستمرة لمستوى كل طالب في جميع
+      المراحل الدراسية من أولى إعدادي وحتى ثانية ثانوي.
+    </p>
+    <div class="animate-fade-up stagger-3 mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+      <a routerLink="/signup" class="btn-primary px-7 py-3 text-base">إنشاء حساب</a>
+      <a routerLink="/login" class="btn-outline px-7 py-3 text-base">تسجيل الدخول</a>
+    </div>
+  </div>
+</section>
+
+<!-- About summary -->
+<section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+  <div class="grid items-center gap-10 lg:grid-cols-2">
+    <div class="order-2 overflow-hidden rounded-3xl border border-line shadow-[var(--shadow-card)] lg:order-1">
+      <img [src]="teacher.profileImageUrl" [alt]="teacher.name" class="h-full w-full object-cover" />
+    </div>
+    <div class="order-1 lg:order-2">
+      <span class="text-xs font-semibold text-primary">عن المعلم</span>
+      <h2 class="mt-2 text-2xl font-extrabold text-ink sm:text-3xl">{{ teacher.name }} - {{ teacher.subject }}</h2>
+      <p class="mt-4 whitespace-pre-line text-sm leading-8 text-ink-muted">{{ teacher.bio }}</p>
+      <div class="mt-5 flex flex-wrap gap-4 text-sm text-ink-muted">
+        <span class="flex items-center gap-1.5">
+          <svg lucideGraduationCap [size]="16" class="text-primary"></svg>
+          {{ teacher.experienceYears }} سنوات خبرة
+        </span>
+        <span class="flex items-center gap-1.5">
+          <svg lucideCircleCheckBig [size]="16" class="text-primary"></svg>
+          {{ teacher.achievements.length }} إنجازات موثقة
+        </span>
+      </div>
+      <a routerLink="/about" class="btn-outline mt-6 inline-flex">اقرأ المزيد عن المعلم</a>
+    </div>
+  </div>
+</section>
+
+<!-- Gallery -->
+<section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+  <div class="text-center">
+    <h2 class="text-2xl font-extrabold text-ink sm:text-3xl">معرض الصور</h2>
+    <p class="mt-2 text-sm text-ink-muted">لقطات من حصص المعلم والفصول الدراسية</p>
+  </div>
+  <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+    @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+      <app-gallery-placeholder class="animate-fade-up" [style.animation-delay.ms]="i * 60"></app-gallery-placeholder>
+    }
+  </div>
+</section>
+
+<!-- Why choose us -->
+<section id="features" class="bg-surface py-16">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="text-center">
+      <h2 class="text-2xl font-extrabold text-ink sm:text-3xl">لماذا تختار منصتنا؟</h2>
+      <p class="mt-2 text-sm text-ink-muted">كل ما يحتاجه الطالب للتفوق في اللغة العربية في مكان واحد</p>
+    </div>
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      @for (item of whyChooseUs; track item.title; let i = $index) {
+        <div
+          class="animate-fade-up rounded-2xl border border-line bg-page p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-card-hover)]"
+          [style.animation-delay.ms]="i * 90"
+        >
+          <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-primary">
+            @switch (item.icon) {
+              @case ('video') {
+                <svg lucideVideo [size]="26"></svg>
+              }
+              @case ('exam') {
+                <svg lucideClipboardCheck [size]="26"></svg>
+              }
+              @case ('pdf') {
+                <svg lucideFileText [size]="26"></svg>
+              }
+              @default {
+                <svg lucideChartBar [size]="26"></svg>
+              }
+            }
+          </div>
+          <h3 class="mt-4 text-base font-bold text-ink">{{ item.title }}</h3>
+          <p class="mt-2 text-sm leading-6 text-ink-muted">{{ item.description }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Statistics -->
+<section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <app-stat-card class="animate-fade-up" label="عدد الطلاب" [value]="stats.students">
+      <svg lucideGraduationCap></svg>
+    </app-stat-card>
+    <app-stat-card class="animate-fade-up stagger-1" label="عدد الدروس" [value]="stats.lessons">
+      <svg lucideVideo></svg>
+    </app-stat-card>
+    <app-stat-card class="animate-fade-up stagger-2" label="عدد الامتحانات" [value]="stats.exams">
+      <svg lucideClipboardCheck></svg>
+    </app-stat-card>
+    <app-stat-card class="animate-fade-up stagger-3" label="نسبة النجاح" [value]="stats.successRate + '%'">
+      <svg lucideChartBar></svg>
+    </app-stat-card>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="bg-surface py-16">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="text-center">
+      <h2 class="text-2xl font-extrabold text-ink sm:text-3xl">ماذا يقول طلابنا وأولياء الأمور</h2>
+    </div>
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      @for (t of testimonials; track t.name; let i = $index) {
+        <div
+          class="animate-fade-up flex flex-col gap-3 rounded-2xl border border-line bg-page p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-card-hover)]"
+          [style.animation-delay.ms]="i * 90"
+        >
+          <svg lucideQuote [size]="22" class="text-primary"></svg>
+          <p class="flex-1 text-sm leading-7 text-ink-muted">{{ t.quote }}</p>
+          <div class="flex items-center gap-1 text-amber-500">
+            @for (s of [1, 2, 3, 4, 5]; track s) {
+              <svg lucideStar [size]="14" fill="currentColor"></svg>
+            }
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-ink">{{ t.name }}</p>
+            <p class="text-xs text-ink-muted">{{ t.stage }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8">
+  <div class="text-center">
+    <h2 class="text-2xl font-extrabold text-ink sm:text-3xl">الأسئلة الشائعة</h2>
+  </div>
+  <div class="mt-8 space-y-3">
+    @for (item of faqItems; track item.question; let i = $index) {
+      <div class="overflow-hidden rounded-2xl border border-line bg-surface">
+        <button
+          type="button"
+          (click)="toggleFaq(i)"
+          class="flex w-full items-center justify-between gap-3 px-5 py-4 text-start text-sm font-semibold text-ink"
+        >
+          {{ item.question }}
+          <svg
+            lucideChevronDown
+            [size]="18"
+            class="shrink-0 text-ink-muted transition-transform duration-300"
+            [class.rotate-180]="openFaqIndex() === i"
+          ></svg>
+        </button>
+        @if (openFaqIndex() === i) {
+          <p class="px-5 pb-4 text-sm leading-7 text-ink-muted">{{ item.answer }}</p>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<!-- Contact -->
+<section id="contact" class="bg-surface py-16">
+  <div class="mx-auto grid max-w-5xl gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
+    <div>
+      <h2 class="text-2xl font-extrabold text-ink sm:text-3xl">تواصل معنا</h2>
+      <p class="mt-3 text-sm leading-7 text-ink-muted">
+        لأي استفسار عن المنصة أو المحتوى التعليمي، يسعدنا تواصلكم معنا عبر النموذج أو بيانات التواصل التالية.
+      </p>
+      <div class="mt-6 space-y-3 text-sm text-ink-muted">
+        <p class="flex items-center gap-2">
+          <svg lucidePhone [size]="16" class="text-primary"></svg>
+          <span dir="ltr">{{ teacher.contactPhone }}</span>
+        </p>
+        <p class="flex items-center gap-2">
+          <svg lucidePhone [size]="16" class="text-primary"></svg>
+          <span dir="ltr">{{ teacher.supportPhone }}</span>
+          <span class="text-xs">(الدعم الفني)</span>
+        </p>
+        <a
+          [href]="teacher.socialLinks.whatsapp"
+          target="_blank"
+          rel="noopener"
+          class="flex items-center gap-2 font-medium text-primary hover:underline"
+        >
+          <app-brand-icon name="whatsapp" [size]="16"></app-brand-icon>
+          تواصل معنا عبر واتساب
+        </a>
+      </div>
+    </div>
+
+    <form [formGroup]="contactForm" (ngSubmit)="submitContact()" class="space-y-4 rounded-2xl border border-line bg-page p-6">
+      @if (contactSubmitted()) {
+        <div class="rounded-xl bg-accent px-4 py-3 text-sm font-medium text-primary">
+          تم استلام رسالتك بنجاح، سنتواصل معك قريبًا.
+        </div>
+      }
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">الاسم</label>
+        <input formControlName="name" type="text" class="field-control" placeholder="اسمك الكامل" />
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">البريد الإلكتروني</label>
+        <input formControlName="email" type="email" class="field-control" placeholder="example@email.com" />
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">الرسالة</label>
+        <textarea formControlName="message" rows="4" class="field-control" placeholder="اكتب رسالتك هنا"></textarea>
+      </div>
+      <button type="submit" class="btn-primary w-full">إرسال الرسالة</button>
+    </form>
+  </div>
+</section>

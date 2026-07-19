@@ -1,0 +1,16 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-extrabold text-ink">الفيديوهات</h1>
+    <p class="mt-1 text-sm text-ink-muted">جميع فيديوهات الشرح الخاصة بمرحلتك الدراسية.</p>
+  </div>
+
+  @if (videos().length === 0) {
+    <app-empty-state title="لا توجد فيديوهات متاحة حاليًا" description="تابعنا، سيتم إضافة فيديوهات جديدة قريبًا."></app-empty-state>
+  } @else {
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      @for (video of videos(); track video.id) {
+        <app-video-card [video]="video" [progressPercent]="progressFor(video)" (watch)="watch(video)"></app-video-card>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,62 @@
+<div class="space-y-8">
+  <div>
+    <h1 class="text-2xl font-extrabold text-ink">النتائج</h1>
+    <p class="mt-1 text-sm text-ink-muted">سجل امتحاناتك ونتائجك ومتوسط أدائك العام.</p>
+  </div>
+
+  @if (results().length === 0) {
+    <app-empty-state title="لا توجد نتائج بعد" description="ستظهر نتائجك هنا فور أداء أول امتحان."></app-empty-state>
+  } @else {
+    <div class="grid gap-4 sm:grid-cols-3">
+      <div class="rounded-2xl border border-line bg-surface p-5 text-center shadow-[var(--shadow-card)]">
+        <svg lucideTrendingUp [size]="22" class="mx-auto text-primary"></svg>
+        <p class="mt-2 text-2xl font-bold text-ink">{{ averagePercentage() }}%</p>
+        <p class="mt-1 text-sm text-ink-muted">المتوسط العام</p>
+      </div>
+      <div class="rounded-2xl border border-line bg-surface p-5 text-center shadow-[var(--shadow-card)]">
+        <svg lucideCircleCheck [size]="22" class="mx-auto text-emerald-600 dark:text-emerald-400"></svg>
+        <p class="mt-2 text-2xl font-bold text-ink">{{ totalCorrect() }}</p>
+        <p class="mt-1 text-sm text-ink-muted">إجابات صحيحة</p>
+      </div>
+      <div class="rounded-2xl border border-line bg-surface p-5 text-center shadow-[var(--shadow-card)]">
+        <svg lucideCircleX [size]="22" class="mx-auto text-red-600 dark:text-red-400"></svg>
+        <p class="mt-2 text-2xl font-bold text-ink">{{ totalWrong() }}</p>
+        <p class="mt-1 text-sm text-ink-muted">إجابات خاطئة</p>
+      </div>
+    </div>
+
+    <div class="rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
+      <h2 class="mb-4 text-sm font-bold text-ink">تطور الأداء عبر الامتحانات</h2>
+      <app-chart-wrapper type="line" [labels]="progressLabels()" [datasets]="progressSeries()"></app-chart-wrapper>
+    </div>
+
+    <div class="overflow-hidden rounded-2xl border border-line bg-surface shadow-[var(--shadow-card)]">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-line text-ink-muted">
+              <th class="px-4 py-3 text-start font-semibold">الامتحان</th>
+              <th class="px-4 py-3 text-start font-semibold">التاريخ</th>
+              <th class="px-4 py-3 text-start font-semibold">الدرجة</th>
+              <th class="px-4 py-3 text-start font-semibold">النسبة</th>
+              <th class="px-4 py-3 text-start font-semibold">صحيح</th>
+              <th class="px-4 py-3 text-start font-semibold">خاطئ</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of sortedResults(); track r.id) {
+              <tr class="border-b border-line last:border-0">
+                <td class="px-4 py-3 font-medium text-ink">{{ r.examTitle }}</td>
+                <td class="px-4 py-3 text-ink-muted">{{ r.takenAt }}</td>
+                <td class="px-4 py-3 text-ink-muted">{{ r.score }} / {{ r.totalMarks }}</td>
+                <td class="px-4 py-3 font-semibold text-primary">{{ r.percentage }}%</td>
+                <td class="px-4 py-3 text-emerald-600 dark:text-emerald-400">{{ r.correctCount }}</td>
+                <td class="px-4 py-3 text-red-600 dark:text-red-400">{{ r.wrongCount }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>

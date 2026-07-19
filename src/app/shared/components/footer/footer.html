@@ -1,0 +1,82 @@
+<footer class="border-t border-line bg-surface">
+  <div class="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-4 lg:px-8">
+    <div class="lg:col-span-2">
+      <div class="flex items-center gap-2 font-extrabold text-ink">
+        <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-sm text-white">ش</span>
+        <span class="text-lg">منصة الشافعي التعليمية</span>
+      </div>
+      <p class="mt-4 max-w-md text-sm leading-7 text-ink-muted">
+        منصة تعليمية متخصصة في اللغة العربية لجميع المراحل الدراسية، مع الأستاذ {{ teacher.name }}،
+        تجمع بين الفيديوهات التفاعلية وملفات PDF والامتحانات الإلكترونية ومتابعة مستوى كل طالب أولاً بأول.
+      </p>
+      <div class="mt-5 flex items-center gap-3">
+        <a
+          [href]="teacher.socialLinks.youtube"
+          target="_blank"
+          rel="noopener"
+          class="flex h-9 w-9 items-center justify-center rounded-full bg-page text-ink-muted transition-colors hover:bg-primary hover:text-white"
+          aria-label="يوتيوب"
+        >
+          <app-brand-icon name="youtube" [size]="16"></app-brand-icon>
+        </a>
+        <a
+          [href]="teacher.socialLinks.facebook"
+          target="_blank"
+          rel="noopener"
+          class="flex h-9 w-9 items-center justify-center rounded-full bg-page text-ink-muted transition-colors hover:bg-primary hover:text-white"
+          aria-label="فيسبوك"
+        >
+          <app-brand-icon name="facebook" [size]="16"></app-brand-icon>
+        </a>
+        <a
+          [href]="teacher.socialLinks.tiktok"
+          target="_blank"
+          rel="noopener"
+          class="flex h-9 w-9 items-center justify-center rounded-full bg-page text-ink-muted transition-colors hover:bg-primary hover:text-white"
+          aria-label="تيك توك"
+        >
+          <app-brand-icon name="tiktok" [size]="16"></app-brand-icon>
+        </a>
+        <a
+          [href]="teacher.socialLinks.whatsapp"
+          target="_blank"
+          rel="noopener"
+          class="flex h-9 w-9 items-center justify-center rounded-full bg-page text-ink-muted transition-colors hover:bg-primary hover:text-white"
+          aria-label="واتساب"
+        >
+          <app-brand-icon name="whatsapp" [size]="16"></app-brand-icon>
+        </a>
+      </div>
+    </div>
+
+    <div>
+      <h3 class="text-sm font-bold text-ink">روابط سريعة</h3>
+      <ul class="mt-4 space-y-2.5 text-sm text-ink-muted">
+        <li><a routerLink="/" class="hover:text-primary">الرئيسية</a></li>
+        <li><a routerLink="/about" class="hover:text-primary">عن المعلم</a></li>
+        <li><a routerLink="/login" class="hover:text-primary">تسجيل الدخول</a></li>
+        <li><a routerLink="/signup" class="hover:text-primary">إنشاء حساب</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-sm font-bold text-ink">تواصل معنا</h3>
+      <ul class="mt-4 space-y-2.5 text-sm text-ink-muted">
+        <li class="flex items-center gap-2">
+          <svg lucidePhone [size]="14" class="text-primary"></svg>
+          <span dir="ltr">{{ teacher.contactPhone }}</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <svg lucidePhone [size]="14" class="text-primary"></svg>
+          <span dir="ltr">{{ teacher.supportPhone }}</span>
+          <span class="text-xs">(الدعم)</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-line px-4 py-5 text-center text-xs text-ink-muted sm:px-6 lg:px-8">
+    <p>&copy; {{ year }} منصة الشافعي التعليمية - جميع الحقوق محفوظة لـ {{ teacher.name }}.</p>
+    <p class="mt-1">تم تصميم وتطوير الموقع بواسطة Eng Fathy Ahmed &amp; Eng Tarek Omar</p>
+  </div>
+</footer>

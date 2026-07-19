@@ -1,0 +1,28 @@
+@if (isMobileOpen()) {
+  <div class="fixed inset-0 z-40 bg-black/40 lg:hidden" (click)="close()"></div>
+}
+
+<aside
+  class="fixed inset-y-0 z-50 flex w-72 flex-col border-e border-line bg-surface transition-[inset-inline-start] duration-300 ease-out lg:start-0"
+  [class]="asidePosition()"
+>
+  <div class="flex items-center gap-3 border-b border-line px-5 py-5">
+    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-sm font-bold text-white">
+      {{ brandInitial() }}
+    </div>
+    <div class="min-w-0">
+      <p class="truncate text-sm font-bold text-ink">{{ brandTitle() }}</p>
+      @if (brandSubtitle()) {
+        <p class="truncate text-xs text-ink-muted">{{ brandSubtitle() }}</p>
+      }
+    </div>
+  </div>
+
+  <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+    <ng-content></ng-content>
+  </nav>
+
+  <div class="border-t border-line p-3">
+    <ng-content select="[footer]"></ng-content>
+  </div>
+</aside>

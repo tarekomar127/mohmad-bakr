@@ -1,0 +1,28 @@
+<div class="flex items-start gap-3 rounded-xl border border-line bg-surface p-4">
+  <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-primary">
+    @switch (iconKind()) {
+      @case ('clipboard') {
+        <svg lucideClipboardCheck [size]="16"></svg>
+      }
+      @case ('calendar') {
+        <svg lucideCalendarOff [size]="16"></svg>
+      }
+      @case ('video') {
+        <svg lucideVideo [size]="16"></svg>
+      }
+      @case ('file') {
+        <svg lucideFileText [size]="16"></svg>
+      }
+      @default {
+        <svg lucideBell [size]="16"></svg>
+      }
+    }
+  </div>
+  <div class="min-w-0 flex-1">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <h4 class="text-sm font-semibold text-ink">{{ notification().title }}</h4>
+      <span class="whitespace-nowrap text-xs text-ink-muted">{{ notification().sentAt | date: 'short' }}</span>
+    </div>
+    <p class="mt-1 text-sm text-ink-muted">{{ notification().message }}</p>
+  </div>
+</div>

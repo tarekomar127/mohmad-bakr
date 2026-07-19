@@ -1,0 +1,16 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-extrabold text-ink">الإشعارات</h1>
+    <p class="mt-1 text-sm text-ink-muted">جميع الإشعارات الخاصة بمرحلتك الدراسية.</p>
+  </div>
+
+  @if (notifications().length === 0) {
+    <app-empty-state title="لا توجد إشعارات حاليًا"></app-empty-state>
+  } @else {
+    <div class="space-y-3">
+      @for (n of notifications(); track n.id) {
+        <app-notification-item [notification]="n"></app-notification-item>
+      }
+    </div>
+  }
+</div>

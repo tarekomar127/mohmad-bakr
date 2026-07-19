@@ -1,0 +1,46 @@
+<div class="grid gap-6 lg:grid-cols-3">
+  <div class="lg:col-span-1">
+    <h1 class="text-2xl font-extrabold text-ink">الإشعارات</h1>
+    <p class="mt-1 text-sm text-ink-muted">إرسال إشعار فوري لجميع الطلاب أو لمرحلة دراسية محددة.</p>
+
+    <form [formGroup]="form" (ngSubmit)="send()" class="mt-6 space-y-4 rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
+      @if (justSent()) {
+        <div class="rounded-xl bg-accent px-4 py-3 text-sm font-medium text-primary">تم إرسال الإشعار بنجاح.</div>
+      }
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">عنوان الإشعار</label>
+        <input formControlName="title" type="text" class="field-control" placeholder="عنوان الإشعار" />
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">الرسالة</label>
+        <textarea formControlName="message" rows="4" class="field-control" placeholder="نص الرسالة"></textarea>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">المرحلة المستهدفة</label>
+        <select formControlName="targetStage" class="field-control">
+          <option value="all">جميع الطلاب</option>
+          @for (stage of stages; track stage) {
+            <option [value]="stage">{{ stageLabels[stage] }}</option>
+          }
+        </select>
+      </div>
+      <button type="submit" class="btn-primary w-full">
+        <svg lucideSend [size]="16"></svg>
+        إرسال الإشعار
+      </button>
+    </form>
+  </div>
+
+  <div class="lg:col-span-2">
+    <h2 class="mb-4 text-sm font-bold text-ink">سجل الإشعارات المرسلة</h2>
+    @if (notifications().length === 0) {
+      <app-empty-state title="لا توجد إشعارات مرسلة بعد"></app-empty-state>
+    } @else {
+      <div class="space-y-3">
+        @for (n of notifications(); track n.id) {
+          <app-notification-item [notification]="n"></app-notification-item>
+        }
+      </div>
+    }
+  </div>
+</div>
