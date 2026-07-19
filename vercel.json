@@ -1,0 +1,7 @@
+{
+  "buildCommand": "ng build",
+  "outputDirectory": "dist/mohmad-bakr/browser",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
