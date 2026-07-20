@@ -75,6 +75,23 @@
       </div>
     </div>
 
+    <div>
+      <label class="mb-1.5 block text-sm font-medium text-ink">رابط شرح إضافي على يوتيوب (اختياري)</label>
+      <input
+        type="url"
+        class="field-control"
+        dir="ltr"
+        placeholder="https://www.youtube.com/watch?v=..."
+        [ngModel]="explainYoutubeUrl()"
+        [ngModelOptions]="{ standalone: true }"
+        (ngModelChange)="onExplainYoutubeUrlChange($event)"
+      />
+      <p class="mt-1 text-xs text-ink-muted">هيظهر للطالب كزرار منفصل "مشاهدة شرح على يوتيوب" جنب الفيديو المرفوع.</p>
+      @if (explainYoutubeUrlInvalid()) {
+        <p class="mt-1 text-xs text-red-600">رابط يوتيوب غير صحيح</p>
+      }
+    </div>
+
     <div class="grid gap-4 sm:grid-cols-2">
       <div>
         <label class="mb-1.5 block text-sm font-medium text-ink">مدة الفيديو (دقيقة)</label>

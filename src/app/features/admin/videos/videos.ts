@@ -7,11 +7,11 @@ import { ConfirmDialogService } from '../../../shared/components/confirm-dialog/
 import { VideosService } from '../../../services/videos.service';
 import { Video } from '../../../models';
 import { VideoFormDialog } from './video-form-dialog/video-form-dialog';
-import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
+import { resolveMediaUrl } from '../../../core/utils/media-url.util';
 
 @Component({
   selector: 'app-videos',
-  imports: [DataTable, EmptyState, LucidePencil, LucidePlus, LucideTrash2, LucideVideo, MediaUrlPipe],
+  imports: [DataTable, EmptyState, LucidePencil, LucidePlus, LucideTrash2, LucideVideo],
   templateUrl: './videos.html',
   styleUrl: './videos.scss',
 })
@@ -22,6 +22,10 @@ export class Videos {
 
   readonly videos = signal<Video[]>([]);
   readonly loading = signal(false);
+
+  thumbFor(video: Video): string | null {
+    return video.thumbnailUrl ? resolveMediaUrl(video.thumbnailUrl) : null;
+  }
 
   constructor() {
     this.reload();

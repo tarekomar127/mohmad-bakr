@@ -38,5 +38,41 @@
     </div>
   </div>
 
+  <div class="mt-6 border-t border-line pt-5">
+    <div class="mb-3 flex items-center gap-2">
+      <svg lucideTrendingUp [size]="18" class="text-primary"></svg>
+      <h2 class="text-sm font-bold text-ink">مستوى الطالب على المنصة</h2>
+    </div>
+
+    @if (loadingResults()) {
+      <p class="text-sm text-ink-muted">جارٍ تحميل النتائج...</p>
+    } @else if (results().length === 0) {
+      <app-empty-state title="لم يؤدِ الطالب أي امتحان بعد"></app-empty-state>
+    } @else {
+      <div class="grid gap-3 sm:grid-cols-2">
+        <div class="rounded-xl bg-page px-4 py-3 text-center">
+          <p class="text-xl font-bold text-primary">{{ averagePercentage() }}%</p>
+          <p class="mt-1 text-xs text-ink-muted">متوسط الدرجات</p>
+        </div>
+        <div class="rounded-xl bg-page px-4 py-3 text-center">
+          <p class="text-xl font-bold text-ink">{{ results().length }}</p>
+          <p class="mt-1 text-xs text-ink-muted">عدد الامتحانات</p>
+        </div>
+      </div>
+
+      <div class="mt-4 space-y-2">
+        @for (r of results(); track r.id) {
+          <div class="flex items-center justify-between rounded-xl bg-page px-4 py-2.5 text-sm">
+            <div>
+              <p class="font-medium text-ink">{{ r.examTitle }}</p>
+              <p class="text-xs text-ink-muted">{{ r.solvedAt | date: 'mediumDate' }}</p>
+            </div>
+            <span class="font-semibold text-primary">{{ r.percentage }}%</span>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
   <button footer type="button" (click)="close()" class="btn-outline">إغلاق</button>
 </app-modal>

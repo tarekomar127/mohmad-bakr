@@ -6,6 +6,7 @@ import { Modal } from '../../../../shared/components/modal/modal';
 import { StageNode, TermNode, UnitNode, Video, VideoCreateDto } from '../../../../models';
 import { StructureService } from '../../../../services/structure.service';
 import { VideosService } from '../../../../services/videos.service';
+import { embedExplainLink, extractExplainLink, isYoutubeUrl, stripExplainLink } from '../../../../shared/utils/youtube.util';
 
 @Component({
   selector: 'app-video-form-dialog',
@@ -24,6 +25,10 @@ export class VideoFormDialog {
   readonly uploading = signal(false);
   readonly uploadedVideoUrl = signal(this.existing?.videoUrl ?? '');
   readonly fileName = signal('');
+  readonly explainYoutubeUrl = signal(extractExplainLink(this.existing?.description) ?? '');
+  readonly explainYoutubeUrlInvalid = computed(
+    () => !!this.explainYoutubeUrl() && !isYoutubeUrl(this.explainYoutubeUrl()),
+  );
 
   readonly selectedStageId = signal('');
   readonly selectedTermId = signal('');
@@ -37,7 +42,7 @@ export class VideoFormDialog {
 
   readonly form = this.fb.group({
     title: [this.existing?.title ?? '', Validators.required],
-    description: [this.existing?.description ?? '', Validators.required],
+    description: [stripExplainLink(this.existing?.description ?? ''), Validators.required],
     thumbnailUrl: [this.existing?.thumbnailUrl ?? ''],
     lessonId: [this.existing?.lessonId ?? '', Validators.required],
     duration: [this.existing?.duration ?? 20, [Validators.required, Validators.min(1)]],
@@ -57,6 +62,10 @@ export class VideoFormDialog {
   onTermChange(id: string): void {
     this.selectedTermId.set(id);
     this.form.patchValue({ lessonId: '' });
+  }
+
+  onExplainYoutubeUrlChange(value: string): void {
+    this.explainYoutubeUrl.set(value.trim());
   }
 
   onFileSelected(event: Event): void {
@@ -79,14 +88,14 @@ export class VideoFormDialog {
   }
 
   save(): void {
-    if (this.form.invalid || !this.uploadedVideoUrl()) {
+    if (this.form.invalid || !this.uploadedVideoUrl() || this.explainYoutubeUrlInvalid()) {
       this.form.markAllAsTouched();
       return;
     }
     const value = this.form.getRawValue();
     this.dialogRef.close({
       title: value.title!,
-      description: value.description!,
+      description: embedExplainLink(value.description!, this.explainYoutubeUrl()),
       thumbnailUrl: value.thumbnailUrl ?? '',
       videoUrl: this.uploadedVideoUrl(),
       lessonId: value.lessonId!,

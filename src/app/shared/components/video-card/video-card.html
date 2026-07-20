@@ -4,8 +4,8 @@
   <div
     class="relative flex aspect-video items-center justify-center bg-gradient-to-br from-primary/90 to-primary/50 text-white"
   >
-    @if (video().thumbnailUrl) {
-      <img [src]="video().thumbnailUrl | mediaUrl" alt="" class="h-full w-full object-cover" />
+    @if (thumbnail()) {
+      <img [src]="thumbnail()" alt="" class="h-full w-full object-cover" />
     } @else {
       <svg lucideCirclePlay [size]="42" [strokeWidth]="1.5"></svg>
     }

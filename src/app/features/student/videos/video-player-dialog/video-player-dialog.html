@@ -7,7 +7,19 @@
     (contextmenu)="$event.preventDefault()"
     class="aspect-video w-full rounded-2xl bg-black"
   ></video>
-  <p class="mt-4 text-sm leading-7 text-ink-muted">{{ video.description }}</p>
+  <p class="mt-4 text-sm leading-7 text-ink-muted">{{ description }}</p>
+
+  @if (explainYoutubeUrl) {
+    <a
+      [href]="explainYoutubeUrl"
+      target="_blank"
+      rel="noopener"
+      class="mt-3 inline-flex items-center gap-2 rounded-xl border border-line px-4 py-2 text-sm font-semibold text-ink transition-colors hover:border-primary hover:text-primary"
+    >
+      <app-brand-icon name="youtube" [size]="16"></app-brand-icon>
+      مشاهدة شرح على يوتيوب
+    </a>
+  }
 
   <button footer type="button" (click)="close()" class="btn-outline">إغلاق</button>
 </app-modal>

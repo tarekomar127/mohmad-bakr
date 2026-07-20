@@ -15,6 +15,22 @@
       </div>
     </div>
   } @else {
+    <div
+      class="sticky top-0 z-10 flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 shadow-[var(--shadow-card)] transition-colors"
+      [class.bg-red-50]="timerLow()"
+      [class.border-red-300]="timerLow()"
+      [class.dark:bg-red-500/10]="timerLow()"
+      [class.dark:border-red-500/30]="timerLow()"
+      [class.bg-surface]="!timerLow()"
+      [class.border-line]="!timerLow()"
+    >
+      <span class="flex items-center gap-2 text-sm font-bold" [class.text-red-600]="timerLow()" [class.dark:text-red-400]="timerLow()" [class.text-ink]="!timerLow()">
+        <svg lucideClock [size]="18"></svg>
+        الوقت المتبقي: {{ timerDisplay() }}
+      </span>
+      <span class="text-xs text-ink-muted">{{ answeredCount() }} / {{ exam()!.questions.length }} تمت الإجابة</span>
+    </div>
+
     <div>
       <h1 class="text-2xl font-extrabold text-ink">{{ exam()!.title }}</h1>
       <div class="mt-2 flex flex-wrap items-center gap-4 text-sm text-ink-muted">
@@ -26,7 +42,6 @@
           <svg lucideClipboardList [size]="15"></svg>
           {{ exam()!.questions.length }} سؤال
         </span>
-        <span>{{ answeredCount() }} / {{ exam()!.questions.length }} تمت الإجابة</span>
       </div>
     </div>
 

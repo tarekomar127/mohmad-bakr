@@ -31,8 +31,8 @@
             <tr>
               <td>
                 <div class="flex h-12 w-20 items-center justify-center overflow-hidden rounded-lg bg-accent text-primary">
-                  @if (video.thumbnailUrl) {
-                    <img [src]="video.thumbnailUrl | mediaUrl" alt="" class="h-full w-full object-cover" />
+                  @if (thumbFor(video); as thumb) {
+                    <img [src]="thumb" alt="" class="h-full w-full object-cover" />
                   } @else {
                     <svg lucideVideo [size]="20"></svg>
                   }
