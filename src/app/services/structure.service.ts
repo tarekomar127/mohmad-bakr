@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, map, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { ApiResponse, CreateLessonRequest, CreateUnitRequest, LessonNode, StageNode, UnitNode } from '../models';
+import { ApiResponse, CreateUnitRequest, StageNode, UnitNode } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class StructureService {
@@ -27,15 +27,5 @@ export class StructureService {
 
   removeUnit(id: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/units/${id}`);
-  }
-
-  createLesson(request: CreateLessonRequest): Observable<LessonNode> {
-    return this.http
-      .post<ApiResponse<LessonNode>>(`${this.baseUrl}/lessons`, request)
-      .pipe(map((res) => res.data));
-  }
-
-  removeLesson(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/lessons/${id}`);
   }
 }

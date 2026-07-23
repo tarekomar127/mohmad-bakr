@@ -1,12 +1,10 @@
 <app-modal [title]="video.title" (closed)="close()">
-  <video
-    [src]="videoSrc"
-    controls
-    controlsList="nodownload noremoteplayback"
-    disablePictureInPicture
-    (contextmenu)="$event.preventDefault()"
+  <iframe
+    [src]="embedUrl"
     class="aspect-video w-full rounded-2xl bg-black"
-  ></video>
+    allow="accelerated-video-decode; encrypted-media; picture-in-picture"
+    allowfullscreen
+  ></iframe>
   <p class="mt-4 text-sm leading-7 text-ink-muted">{{ description }}</p>
 
   @if (explainYoutubeUrl) {

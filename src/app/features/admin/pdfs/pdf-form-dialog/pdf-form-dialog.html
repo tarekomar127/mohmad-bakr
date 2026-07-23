@@ -10,7 +10,7 @@
       <textarea formControlName="description" rows="3" class="field-control" placeholder="وصف مختصر للملف"></textarea>
     </div>
 
-    <div class="grid gap-4 sm:grid-cols-3">
+    <div class="grid gap-4 sm:grid-cols-2">
       <div>
         <label class="mb-1.5 block text-sm font-medium text-ink">المرحلة</label>
         <select class="field-control" [ngModel]="selectedStageId()" [ngModelOptions]="{ standalone: true }" (ngModelChange)="onStageChange($event)">
@@ -35,17 +35,16 @@
           }
         </select>
       </div>
-      <div>
-        <label class="mb-1.5 block text-sm font-medium text-ink">الوحدة / الدرس</label>
-        <select formControlName="lessonId" class="field-control" [disabled]="!selectedTermId()">
-          <option value="" disabled>اختر الدرس</option>
-          @for (unit of units(); track unit.id) {
-            @for (lesson of unit.lessons; track lesson.id) {
-              <option [value]="lesson.id">{{ unit.name }} - {{ lesson.name }}</option>
-            }
-          }
-        </select>
-      </div>
+    </div>
+
+    <div>
+      <label class="mb-1.5 block text-sm font-medium text-ink">الوحدة</label>
+      <select formControlName="unitId" class="field-control" [disabled]="!selectedTermId()">
+        <option value="" disabled>اختر الوحدة</option>
+        @for (unit of units(); track unit.id) {
+          <option [value]="unit.id">{{ unit.name }}</option>
+        }
+      </select>
     </div>
 
     <div>

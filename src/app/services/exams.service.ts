@@ -7,6 +7,7 @@ import {
   EducationalStage,
   Exam,
   ExamCreateDto,
+  EssayAnswerGradeDto,
   ExamResult,
   ExamSubmitDto,
   ExamUpdateDto,
@@ -54,6 +55,12 @@ export class ExamsService {
   submit(id: string, dto: ExamSubmitDto): Observable<ExamResult> {
     return this.http
       .post<ApiResponse<ExamResult>>(`${this.baseUrl}/${id}/submit`, dto)
+      .pipe(map((res) => res.data));
+  }
+
+  gradeEssayAnswers(resultId: string, dto: EssayAnswerGradeDto): Observable<ExamResult> {
+    return this.http
+      .put<ApiResponse<ExamResult>>(`${environment.apiUrl}/Exams/results/${resultId}/grade`, dto)
       .pipe(map((res) => res.data));
   }
 }

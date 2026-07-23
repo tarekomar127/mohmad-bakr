@@ -1,10 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { BrandIcon } from '../../../../shared/components/brand-icon/brand-icon';
 import { Video } from '../../../../models';
-import { resolveMediaUrl } from '../../../../core/utils/media-url.util';
-import { extractExplainLink, stripExplainLink } from '../../../../shared/utils/youtube.util';
+import { extractExplainLink, stripExplainLink, youtubeEmbedUrl } from '../../../../shared/utils/youtube.util';
 
 @Component({
   selector: 'app-video-player-dialog',
@@ -14,8 +14,11 @@ import { extractExplainLink, stripExplainLink } from '../../../../shared/utils/y
 })
 export class VideoPlayerDialog {
   private readonly dialogRef = inject(MatDialogRef<VideoPlayerDialog>);
+  private readonly sanitizer = inject(DomSanitizer);
   readonly video = inject<Video>(MAT_DIALOG_DATA);
-  readonly videoSrc = resolveMediaUrl(this.video.videoUrl);
+  readonly embedUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+    this.video.youTubeEmbedUrl ?? youtubeEmbedUrl(this.video.youTubeUrl) ?? '',
+  );
   readonly description = stripExplainLink(this.video.description);
   readonly explainYoutubeUrl = extractExplainLink(this.video.description);
 

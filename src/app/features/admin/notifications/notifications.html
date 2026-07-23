@@ -38,7 +38,7 @@
     } @else {
       <div class="space-y-3">
         @for (n of notifications(); track n.id) {
-          <app-notification-item [notification]="n"></app-notification-item>
+          <app-notification-item [notification]="n" [showDelete]="true" (remove)="deleteNotification(n)"></app-notification-item>
         }
       </div>
     }

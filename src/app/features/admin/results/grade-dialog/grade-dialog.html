@@ -1,0 +1,63 @@
+<app-modal [title]="'إجابات: ' + result.studentName" (closed)="close()">
+  <p class="mb-4 text-sm text-ink-muted">{{ result.examTitle }} — الدرجة: {{ result.score }} ({{ result.percentage }}%)</p>
+
+  @if (result.answers.length === 0) {
+    <p class="rounded-xl bg-page px-4 py-3 text-sm text-ink-muted">
+      مفيش بيانات إجابات محفوظة لهذه المحاولة (على الأغلب تمت قبل تفعيل نظام تتبع الإجابات).
+    </p>
+  } @else {
+    <div class="space-y-4">
+      @for (a of mcqAnswers(); track a.questionId) {
+        <div class="rounded-2xl border border-line bg-page p-4">
+          <p class="text-sm font-semibold text-ink">{{ questionText(a.questionId) }}</p>
+          <p class="mt-2 text-sm">
+            إجابة الطالب:
+            <span
+              class="font-semibold"
+              [class.text-emerald-600]="isCorrect(a.questionId, a.selectedAnswer)"
+              [class.dark:text-emerald-400]="isCorrect(a.questionId, a.selectedAnswer)"
+              [class.text-red-600]="!isCorrect(a.questionId, a.selectedAnswer)"
+              [class.dark:text-red-400]="!isCorrect(a.questionId, a.selectedAnswer)"
+            >
+              {{ optionLabel(a.selectedAnswer) }}
+            </span>
+          </p>
+          <p class="mt-1 text-xs text-ink-muted">الدرجة: {{ a.score }} / {{ maxMarks(a.questionId) }}</p>
+        </div>
+      }
+
+      @for (a of essayAnswers(); track a.questionId) {
+        <div class="rounded-2xl border border-line bg-page p-4">
+          <p class="text-sm font-semibold text-ink">{{ questionText(a.questionId) }}</p>
+          <p class="mt-2 whitespace-pre-line rounded-xl border border-line bg-surface p-3 text-sm leading-7 text-ink-muted">
+            {{ a.textAnswer || 'لم يجب الطالب على هذا السؤال' }}
+          </p>
+          <div class="mt-3 flex items-center gap-2">
+            <label class="text-xs font-medium text-ink-muted">الدرجة</label>
+            @if (a.isGraded) {
+              <span class="text-sm font-semibold text-ink">{{ a.score }} / {{ maxMarks(a.questionId) }}</span>
+            } @else {
+              <input
+                type="number"
+                min="0"
+                [max]="maxMarks(a.questionId)"
+                class="field-control w-24"
+                [ngModel]="scores()[a.questionId] ?? 0"
+                [ngModelOptions]="{ standalone: true }"
+                (ngModelChange)="setScore(a.questionId, $event)"
+              />
+              <span class="text-xs text-ink-muted">/ {{ maxMarks(a.questionId) }}</span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <button footer type="button" (click)="close()" class="btn-outline">إغلاق</button>
+  @if (hasUngradedEssay()) {
+    <button footer type="button" (click)="save()" [disabled]="saving()" class="btn-primary">
+      {{ saving() ? 'جارٍ الحفظ...' : 'حفظ الدرجات' }}
+    </button>
+  }
+</app-modal>

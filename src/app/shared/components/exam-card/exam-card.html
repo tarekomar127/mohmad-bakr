@@ -13,9 +13,9 @@
       <svg lucideClock [size]="16" class="text-primary"></svg>
       {{ exam().duration }} د
     </div>
-    <div class="flex flex-col items-center gap-1 border-x border-line">
+    <div class="flex flex-col items-center gap-1 truncate border-x border-line px-1" [title]="exam().unitName">
       <svg lucideListChecks [size]="16" class="text-primary"></svg>
-      {{ exam().questions.length }} سؤال
+      <span class="truncate">{{ exam().unitName }}</span>
     </div>
     <div class="flex flex-col items-center gap-1">
       <span class="font-bold text-primary">{{ exam().totalMarks }}</span>

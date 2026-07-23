@@ -26,8 +26,13 @@ export class ExamTake {
   readonly submitting = signal(false);
   readonly result = signal<ExamResult | null>(null);
   readonly answers = signal<Record<string, QuestionAnswer>>({});
+  readonly textAnswers = signal<Record<string, string>>({});
 
-  readonly answeredCount = computed(() => Object.keys(this.answers()).length);
+  readonly answeredCount = computed(() => {
+    const exam = this.exam();
+    if (!exam) return 0;
+    return exam.questions.filter((q) => this.isAnswered(q)).length;
+  });
   readonly allAnswered = computed(() => {
     const exam = this.exam();
     return !!exam && exam.questions.length > 0 && this.answeredCount() === exam.questions.length;
@@ -56,6 +61,10 @@ export class ExamTake {
     this.destroyRef.onDestroy(() => this.stopTimer());
   }
 
+  private isAnswered(q: Question): boolean {
+    return q.questionType === 'Essay' ? !!this.textAnswers()[q.id]?.trim() : this.answers()[q.id] !== undefined;
+  }
+
   private startTimer(seconds: number): void {
     this.remainingSeconds.set(seconds);
     this.timerHandle = setInterval(() => {
@@ -79,15 +88,19 @@ export class ExamTake {
 
   optionsFor(q: Question): AnswerOption[] {
     return [
-      { label: q.optionA, value: QuestionAnswer.A },
-      { label: q.optionB, value: QuestionAnswer.B },
-      { label: q.optionC, value: QuestionAnswer.C },
-      { label: q.optionD, value: QuestionAnswer.D },
+      { label: q.optionA!, value: QuestionAnswer.A },
+      { label: q.optionB!, value: QuestionAnswer.B },
+      { label: q.optionC!, value: QuestionAnswer.C },
+      { label: q.optionD!, value: QuestionAnswer.D },
     ];
   }
 
   select(questionId: string, answer: QuestionAnswer): void {
     this.answers.update((current) => ({ ...current, [questionId]: answer }));
+  }
+
+  setTextAnswer(questionId: string, value: string): void {
+    this.textAnswers.update((current) => ({ ...current, [questionId]: value }));
   }
 
   submit(forced = false): void {
@@ -98,8 +111,12 @@ export class ExamTake {
     this.examsService
       .submit(exam.id, {
         answers: exam.questions
-          .filter((q) => this.answers()[q.id] !== undefined)
-          .map((q) => ({ questionId: q.id, selectedAnswer: this.answers()[q.id] })),
+          .filter((q) => this.isAnswered(q))
+          .map((q) => ({
+            questionId: q.id,
+            selectedAnswer: q.questionType === 'MCQ' ? this.answers()[q.id] : null,
+            textAnswer: q.questionType === 'Essay' ? this.textAnswers()[q.id] : null,
+          })),
       })
       .subscribe({
         next: (result) => {

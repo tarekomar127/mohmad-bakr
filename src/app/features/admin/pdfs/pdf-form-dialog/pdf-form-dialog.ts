@@ -25,8 +25,8 @@ export class PdfFormDialog {
   readonly uploadedFileUrl = signal(this.existing?.fileUrl ?? '');
   readonly fileName = signal('');
 
-  readonly selectedStageId = signal('');
-  readonly selectedTermId = signal('');
+  readonly selectedStageId = signal(this.existing?.educationalStageId ?? '');
+  readonly selectedTermId = signal(this.existing?.termId ?? '');
 
   readonly terms = computed<TermNode[]>(
     () => this.stages().find((s: StageNode) => s.id === this.selectedStageId())?.terms ?? [],
@@ -38,7 +38,7 @@ export class PdfFormDialog {
   readonly form = this.fb.group({
     title: [this.existing?.title ?? '', Validators.required],
     description: [this.existing?.description ?? '', Validators.required],
-    lessonId: [this.existing?.lessonId ?? '', Validators.required],
+    unitId: [this.existing?.unitId ?? '', Validators.required],
   });
 
   constructor() {
@@ -48,12 +48,12 @@ export class PdfFormDialog {
   onStageChange(id: string): void {
     this.selectedStageId.set(id);
     this.selectedTermId.set('');
-    this.form.patchValue({ lessonId: '' });
+    this.form.patchValue({ unitId: '' });
   }
 
   onTermChange(id: string): void {
     this.selectedTermId.set(id);
-    this.form.patchValue({ lessonId: '' });
+    this.form.patchValue({ unitId: '' });
   }
 
   onFileSelected(event: Event): void {
@@ -76,7 +76,7 @@ export class PdfFormDialog {
   }
 
   save(): void {
-    if (this.form.invalid || !this.uploadedFileUrl()) {
+    if (this.form.invalid || !this.uploadedFileUrl() || !this.selectedStageId() || !this.selectedTermId()) {
       this.form.markAllAsTouched();
       return;
     }
@@ -85,7 +85,9 @@ export class PdfFormDialog {
       title: value.title!,
       description: value.description!,
       fileUrl: this.uploadedFileUrl(),
-      lessonId: value.lessonId!,
+      educationalStageId: this.selectedStageId(),
+      termId: this.selectedTermId(),
+      unitId: value.unitId!,
     });
   }
 }

@@ -15,7 +15,7 @@
       <input formControlName="thumbnailUrl" type="text" class="field-control" placeholder="/uploads/thumb.jpg" dir="ltr" />
     </div>
 
-    <div class="grid gap-4 sm:grid-cols-3">
+    <div class="grid gap-4 sm:grid-cols-2">
       <div>
         <label class="mb-1.5 block text-sm font-medium text-ink">المرحلة</label>
         <select class="field-control" [ngModel]="selectedStageId()" [ngModelOptions]="{ standalone: true }" (ngModelChange)="onStageChange($event)">
@@ -40,39 +40,30 @@
           }
         </select>
       </div>
-      <div>
-        <label class="mb-1.5 block text-sm font-medium text-ink">الوحدة / الدرس</label>
-        <select formControlName="lessonId" class="field-control" [disabled]="!selectedTermId()">
-          <option value="" disabled>اختر الدرس</option>
-          @for (unit of units(); track unit.id) {
-            @for (lesson of unit.lessons; track lesson.id) {
-              <option [value]="lesson.id">{{ unit.name }} - {{ lesson.name }}</option>
-            }
-          }
-        </select>
-      </div>
     </div>
 
     <div>
-      <label class="mb-1.5 block text-sm font-medium text-ink">ملف الفيديو</label>
-      <div class="flex items-center gap-3">
-        <label class="btn-outline shrink-0 cursor-pointer text-xs">
-          <svg lucideUpload [size]="14"></svg>
-          اختيار ملف
-          <input type="file" accept="video/*" class="hidden" (change)="onFileSelected($event)" />
-        </label>
-        <p class="min-w-0 flex-1 truncate text-xs text-ink-muted">
-          @if (uploading()) {
-            جاري الرفع...
-          } @else if (fileName()) {
-            {{ fileName() }} — تم الرفع
-          } @else if (uploadedVideoUrl()) {
-            يوجد ملف مرفوع بالفعل
-          } @else {
-            لم يتم اختيار ملف بعد
-          }
-        </p>
-      </div>
+      <label class="mb-1.5 block text-sm font-medium text-ink">الوحدة</label>
+      <select formControlName="unitId" class="field-control" [disabled]="!selectedTermId()">
+        <option value="" disabled>اختر الوحدة</option>
+        @for (unit of units(); track unit.id) {
+          <option [value]="unit.id">{{ unit.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div>
+      <label class="mb-1.5 block text-sm font-medium text-ink">رابط فيديو يوتيوب</label>
+      <input
+        formControlName="youTubeUrl"
+        type="url"
+        class="field-control"
+        dir="ltr"
+        placeholder="https://www.youtube.com/watch?v=... أو https://youtu.be/..."
+      />
+      @if (form.controls.youTubeUrl.invalid && form.controls.youTubeUrl.touched) {
+        <p class="mt-1 text-xs text-red-600">رابط يوتيوب غير صحيح</p>
+      }
     </div>
 
     <div>
@@ -108,5 +99,5 @@
   </form>
 
   <button footer type="button" (click)="close()" class="btn-outline">إلغاء</button>
-  <button footer type="button" (click)="save()" [disabled]="uploading()" class="btn-primary">حفظ</button>
+  <button footer type="button" (click)="save()" class="btn-primary">حفظ</button>
 </app-modal>

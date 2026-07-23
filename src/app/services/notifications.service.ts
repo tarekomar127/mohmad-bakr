@@ -31,4 +31,8 @@ export class NotificationsService {
   send(dto: NotificationCreateDto): Observable<AppNotification> {
     return this.http.post<ApiResponse<AppNotification>>(this.baseUrl, dto).pipe(map((res) => res.data));
   }
+
+  remove(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
 }

@@ -34,10 +34,7 @@ export const routes: Routes = [
       { path: 'videos', loadComponent: () => import('./features/admin/videos/videos').then((m) => m.Videos) },
       { path: 'pdfs', loadComponent: () => import('./features/admin/pdfs/pdfs').then((m) => m.Pdfs) },
       { path: 'exams', loadComponent: () => import('./features/admin/exams/exams').then((m) => m.Exams) },
-      {
-        path: 'announcements',
-        loadComponent: () => import('./features/admin/announcements/announcements').then((m) => m.Announcements),
-      },
+      { path: 'results', loadComponent: () => import('./features/admin/results/results').then((m) => m.Results) },
       {
         path: 'notifications',
         loadComponent: () => import('./features/admin/notifications/notifications').then((m) => m.Notifications),

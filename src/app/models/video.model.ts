@@ -3,9 +3,9 @@ export interface Video {
   title: string;
   description: string;
   thumbnailUrl: string;
-  videoUrl: string;
-  lessonId: string;
-  lessonName: string;
+  videoUrl: string | null;
+  youTubeUrl: string | null;
+  youTubeEmbedUrl: string | null;
   unitId: string;
   unitName: string;
   termId: string;
@@ -21,8 +21,11 @@ export interface VideoCreateDto {
   title: string;
   description: string;
   thumbnailUrl: string;
-  videoUrl: string;
-  lessonId: string;
+  videoUrl: string | null;
+  youTubeUrl: string | null;
+  educationalStageId: string;
+  termId: string;
+  unitId: string;
   duration: number;
   isPublished: boolean;
 }

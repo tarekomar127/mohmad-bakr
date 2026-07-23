@@ -4,6 +4,7 @@ import { LucideSend } from '@lucide/angular';
 import { NotificationItem } from '../../../shared/components/notification-item/notification-item';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { NotificationsService } from '../../../services/notifications.service';
+import { ConfirmDialogService } from '../../../shared/components/confirm-dialog/confirm-dialog.service';
 import { ALL_STAGES, AppNotification, EducationalStage, STAGE_LABELS } from '../../../models';
 
 @Component({
@@ -14,6 +15,7 @@ import { ALL_STAGES, AppNotification, EducationalStage, STAGE_LABELS } from '../
 })
 export class Notifications {
   private readonly notificationsService = inject(NotificationsService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly fb = inject(FormBuilder);
 
   readonly stages = ALL_STAGES;
@@ -48,6 +50,21 @@ export class Notifications {
         this.justSent.set(true);
         this.reload();
         setTimeout(() => this.justSent.set(false), 3000);
+      });
+  }
+
+  deleteNotification(notification: AppNotification): void {
+    this.confirmDialog
+      .confirm({
+        title: 'حذف الإشعار',
+        message: `هل تريد حذف إشعار "${notification.title}"؟`,
+        confirmText: 'حذف',
+        danger: true,
+      })
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.notificationsService.remove(notification.id).subscribe(() => this.reload());
+        }
       });
   }
 }

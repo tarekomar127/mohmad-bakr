@@ -61,7 +61,7 @@ export class Landing {
   readonly contact = SITE_CONTACT;
 
   readonly stats = {
-    students: 500,
+    students: '500+',
     lessons: 90,
     exams: 40,
     successRate: 95,

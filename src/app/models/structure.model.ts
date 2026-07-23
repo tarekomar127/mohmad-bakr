@@ -1,14 +1,8 @@
 import { EducationalStage } from './api.model';
 
-export interface LessonNode {
-  id: string;
-  name: string;
-}
-
 export interface UnitNode {
   id: string;
   name: string;
-  lessons: LessonNode[];
 }
 
 export interface TermNode {
@@ -26,10 +20,5 @@ export interface StageNode {
 
 export interface CreateUnitRequest {
   termId: string;
-  name: string;
-}
-
-export interface CreateLessonRequest {
-  unitId: string;
   name: string;
 }

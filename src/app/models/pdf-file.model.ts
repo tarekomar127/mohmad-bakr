@@ -3,8 +3,6 @@ export interface PdfFile {
   title: string;
   description: string;
   fileUrl: string;
-  lessonId: string;
-  lessonName: string;
   unitId: string;
   unitName: string;
   termId: string;
@@ -18,7 +16,9 @@ export interface PdfCreateDto {
   title: string;
   description: string;
   fileUrl: string;
-  lessonId: string;
+  educationalStageId: string;
+  termId: string;
+  unitId: string | null;
 }
 
 export type PdfUpdateDto = PdfCreateDto;

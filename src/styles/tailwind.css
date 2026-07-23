@@ -57,6 +57,14 @@
     @apply inline-flex items-center justify-center gap-2 rounded-xl border border-line px-5 py-2.5 text-sm font-semibold text-ink transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:text-primary active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50;
   }
 
+  /* Calligraphic brand wordmark — classical Naskh style with full tashkeel. */
+  .brand-wordmark {
+    font-family: 'Amiri', 'Cairo', serif;
+    font-weight: 700;
+    color: var(--color-primary);
+    line-height: 1;
+  }
+
   /* Decorative Islamic 8-point star lattice — evokes Arabic geometric art without a photo. */
   .hero-pattern {
     position: relative;

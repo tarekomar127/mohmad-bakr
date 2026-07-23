@@ -18,6 +18,11 @@ export function isYoutubeUrl(url: string | null | undefined): boolean {
   return extractYoutubeId(url) !== null;
 }
 
+export function youtubeEmbedUrl(url: string | null | undefined): string | null {
+  const id = extractYoutubeId(url);
+  return id ? `https://www.youtube-nocookie.com/embed/${id}` : null;
+}
+
 /**
  * The backend has no dedicated field for a supplementary YouTube explanation link,
  * so it's embedded as a trailing marker inside the video description text.

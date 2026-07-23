@@ -3,7 +3,17 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormArray, FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucidePlus, LucideTrash2 } from '@lucide/angular';
 import { Modal } from '../../../../shared/components/modal/modal';
-import { Exam, ExamCreateDto, QuestionAnswer, StageNode, TermNode, UnitNode } from '../../../../models';
+import {
+  Exam,
+  ExamCreateDto,
+  Question,
+  QuestionAnswer,
+  QuestionCreateDto,
+  QuestionType,
+  StageNode,
+  TermNode,
+  UnitNode,
+} from '../../../../models';
 import { StructureService } from '../../../../services/structure.service';
 
 @Component({
@@ -19,8 +29,9 @@ export class ExamFormDialog {
   private readonly structureService = inject(StructureService);
 
   readonly stages = this.structureService.stages;
-  readonly selectedStageId = signal('');
-  readonly selectedTermId = signal('');
+  readonly selectedStageId = signal(this.existing?.educationalStageId ?? '');
+  readonly selectedTermId = signal(this.existing?.termId ?? '');
+  readonly mcqValidationError = signal(false);
 
   readonly terms = computed<TermNode[]>(
     () => this.stages().find((s: StageNode) => s.id === this.selectedStageId())?.terms ?? [],
@@ -31,7 +42,7 @@ export class ExamFormDialog {
 
   readonly form = this.fb.group({
     title: [this.existing?.title ?? '', Validators.required],
-    lessonId: [this.existing?.lessonId ?? '', Validators.required],
+    unitId: [this.existing?.unitId ?? '', Validators.required],
     duration: [this.existing?.duration ?? 30, [Validators.required, Validators.min(1)]],
     totalMarks: [this.existing?.totalMarks ?? 10, [Validators.required, Validators.min(1)]],
     questions: this.fb.array(
@@ -50,21 +61,16 @@ export class ExamFormDialog {
     return this.form.get('questions') as FormArray;
   }
 
-  private buildQuestion(existing?: {
-    text: string;
-    optionA: string;
-    optionB: string;
-    optionC: string;
-    optionD: string;
-    correctAnswer: QuestionAnswer;
-  }) {
+  private buildQuestion(existing?: Question | QuestionCreateDto) {
     return this.fb.group({
       text: [existing?.text ?? '', Validators.required],
-      optionA: [existing?.optionA ?? '', Validators.required],
-      optionB: [existing?.optionB ?? '', Validators.required],
-      optionC: [existing?.optionC ?? '', Validators.required],
-      optionD: [existing?.optionD ?? '', Validators.required],
-      correctAnswer: [existing?.correctAnswer ?? QuestionAnswer.A, Validators.required],
+      questionType: [(existing?.questionType ?? 'MCQ') as QuestionType, Validators.required],
+      marks: [existing?.marks ?? 1, [Validators.required, Validators.min(1)]],
+      optionA: [existing?.optionA ?? ''],
+      optionB: [existing?.optionB ?? ''],
+      optionC: [existing?.optionC ?? ''],
+      optionD: [existing?.optionD ?? ''],
+      correctAnswer: [existing?.correctAnswer ?? QuestionAnswer.A],
     });
   }
 
@@ -76,15 +82,19 @@ export class ExamFormDialog {
     this.questions.removeAt(index);
   }
 
+  setQuestionType(index: number, type: QuestionType): void {
+    this.questions.at(index).patchValue({ questionType: type });
+  }
+
   onStageChange(id: string): void {
     this.selectedStageId.set(id);
     this.selectedTermId.set('');
-    this.form.patchValue({ lessonId: '' });
+    this.form.patchValue({ unitId: '' });
   }
 
   onTermChange(id: string): void {
     this.selectedTermId.set(id);
-    this.form.patchValue({ lessonId: '' });
+    this.form.patchValue({ unitId: '' });
   }
 
   close(): void {
@@ -92,10 +102,49 @@ export class ExamFormDialog {
   }
 
   save(): void {
-    if (this.form.invalid || this.questions.length === 0) {
+    this.mcqValidationError.set(false);
+    if (this.form.invalid || this.questions.length === 0 || !this.selectedStageId() || !this.selectedTermId()) {
       this.form.markAllAsTouched();
       return;
     }
-    this.dialogRef.close(this.form.getRawValue() as ExamCreateDto);
+    const rawQuestions = this.questions.getRawValue() as Array<{
+      text: string;
+      questionType: QuestionType;
+      marks: number;
+      optionA: string;
+      optionB: string;
+      optionC: string;
+      optionD: string;
+      correctAnswer: QuestionAnswer;
+    }>;
+    const mcqIncomplete = rawQuestions.some(
+      (q) => q.questionType === 'MCQ' && (!q.optionA || !q.optionB || !q.optionC || !q.optionD),
+    );
+    if (mcqIncomplete) {
+      this.mcqValidationError.set(true);
+      return;
+    }
+
+    const questions: QuestionCreateDto[] = rawQuestions.map((q) => ({
+      text: q.text,
+      questionType: q.questionType,
+      marks: q.marks,
+      optionA: q.questionType === 'MCQ' ? q.optionA : null,
+      optionB: q.questionType === 'MCQ' ? q.optionB : null,
+      optionC: q.questionType === 'MCQ' ? q.optionC : null,
+      optionD: q.questionType === 'MCQ' ? q.optionD : null,
+      correctAnswer: q.questionType === 'MCQ' ? q.correctAnswer : null,
+    }));
+
+    const value = this.form.getRawValue();
+    this.dialogRef.close({
+      title: value.title!,
+      educationalStageId: this.selectedStageId(),
+      termId: this.selectedTermId(),
+      unitId: value.unitId!,
+      duration: value.duration!,
+      totalMarks: value.totalMarks!,
+      questions,
+    });
   }
 }

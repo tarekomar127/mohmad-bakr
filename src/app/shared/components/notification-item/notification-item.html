@@ -9,4 +9,14 @@
     </div>
     <p class="mt-1 text-sm text-ink-muted">{{ notification().message }}</p>
   </div>
+  @if (showDelete()) {
+    <button
+      type="button"
+      (click)="remove.emit()"
+      class="shrink-0 text-ink-muted transition-colors hover:text-red-600"
+      aria-label="حذف الإشعار"
+    >
+      <svg lucideTrash2 [size]="16"></svg>
+    </button>
+  }
 </div>

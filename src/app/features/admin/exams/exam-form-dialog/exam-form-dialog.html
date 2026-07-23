@@ -5,7 +5,7 @@
       <input formControlName="title" type="text" class="field-control" placeholder="عنوان الامتحان" />
     </div>
 
-    <div class="grid gap-4 sm:grid-cols-3">
+    <div class="grid gap-4 sm:grid-cols-2">
       <div>
         <label class="mb-1.5 block text-sm font-medium text-ink">المرحلة</label>
         <select class="field-control" [ngModel]="selectedStageId()" [ngModelOptions]="{ standalone: true }" (ngModelChange)="onStageChange($event)">
@@ -30,17 +30,16 @@
           }
         </select>
       </div>
-      <div>
-        <label class="mb-1.5 block text-sm font-medium text-ink">الوحدة / الدرس</label>
-        <select formControlName="lessonId" class="field-control" [disabled]="!selectedTermId()">
-          <option value="" disabled>اختر الدرس</option>
-          @for (unit of units(); track unit.id) {
-            @for (lesson of unit.lessons; track lesson.id) {
-              <option [value]="lesson.id">{{ unit.name }} - {{ lesson.name }}</option>
-            }
-          }
-        </select>
-      </div>
+    </div>
+
+    <div>
+      <label class="mb-1.5 block text-sm font-medium text-ink">الوحدة</label>
+      <select formControlName="unitId" class="field-control" [disabled]="!selectedTermId()">
+        <option value="" disabled>اختر الوحدة</option>
+        @for (unit of units(); track unit.id) {
+          <option [value]="unit.id">{{ unit.name }}</option>
+        }
+      </select>
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2">
@@ -62,6 +61,10 @@
       </button>
     </div>
 
+    @if (mcqValidationError()) {
+      <p class="text-xs text-red-600">لازم تملأ كل الاختيارات الأربعة لأي سؤال اختياري.</p>
+    }
+
     <div formArrayName="questions" class="space-y-4">
       @for (q of questions.controls; track $index; let i = $index) {
         <div [formGroupName]="i" class="space-y-3 rounded-2xl border border-line bg-page p-4">
@@ -71,22 +74,60 @@
               <svg lucideTrash2 [size]="14"></svg>
             </button>
           </div>
+
+          <div class="flex gap-2">
+            <button
+              type="button"
+              (click)="setQuestionType(i, 'MCQ')"
+              class="flex-1 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-colors"
+              [class.border-primary]="q.value.questionType === 'MCQ'"
+              [class.bg-accent]="q.value.questionType === 'MCQ'"
+              [class.text-primary]="q.value.questionType === 'MCQ'"
+              [class.border-line]="q.value.questionType !== 'MCQ'"
+              [class.text-ink-muted]="q.value.questionType !== 'MCQ'"
+            >
+              اختيار من متعدد
+            </button>
+            <button
+              type="button"
+              (click)="setQuestionType(i, 'Essay')"
+              class="flex-1 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-colors"
+              [class.border-primary]="q.value.questionType === 'Essay'"
+              [class.bg-accent]="q.value.questionType === 'Essay'"
+              [class.text-primary]="q.value.questionType === 'Essay'"
+              [class.border-line]="q.value.questionType !== 'Essay'"
+              [class.text-ink-muted]="q.value.questionType !== 'Essay'"
+            >
+              مقالي
+            </button>
+          </div>
+
           <input formControlName="text" type="text" class="field-control" placeholder="نص السؤال" />
-          <div class="grid gap-2 sm:grid-cols-2">
-            <input formControlName="optionA" type="text" class="field-control" placeholder="الاختيار أ" />
-            <input formControlName="optionB" type="text" class="field-control" placeholder="الاختيار ب" />
-            <input formControlName="optionC" type="text" class="field-control" placeholder="الاختيار ج" />
-            <input formControlName="optionD" type="text" class="field-control" placeholder="الاختيار د" />
-          </div>
+
           <div>
-            <label class="mb-1.5 block text-xs font-medium text-ink-muted">الإجابة الصحيحة</label>
-            <select formControlName="correctAnswer" class="field-control">
-              <option [ngValue]="1">أ</option>
-              <option [ngValue]="2">ب</option>
-              <option [ngValue]="3">ج</option>
-              <option [ngValue]="4">د</option>
-            </select>
+            <label class="mb-1.5 block text-xs font-medium text-ink-muted">الدرجة</label>
+            <input formControlName="marks" type="number" min="1" class="field-control w-32" />
           </div>
+
+          @if (q.value.questionType === 'MCQ') {
+            <div class="grid gap-2 sm:grid-cols-2">
+              <input formControlName="optionA" type="text" class="field-control" placeholder="الاختيار أ" />
+              <input formControlName="optionB" type="text" class="field-control" placeholder="الاختيار ب" />
+              <input formControlName="optionC" type="text" class="field-control" placeholder="الاختيار ج" />
+              <input formControlName="optionD" type="text" class="field-control" placeholder="الاختيار د" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-xs font-medium text-ink-muted">الإجابة الصحيحة</label>
+              <select formControlName="correctAnswer" class="field-control">
+                <option [ngValue]="1">أ</option>
+                <option [ngValue]="2">ب</option>
+                <option [ngValue]="3">ج</option>
+                <option [ngValue]="4">د</option>
+              </select>
+            </div>
+          } @else {
+            <p class="text-xs text-ink-muted">هيجاوب الطالب بنص حر، والمعلم هو اللي يحط الدرجة يدويًا بعد التسليم.</p>
+          }
         </div>
       }
     </div>
